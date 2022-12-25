@@ -1,0 +1,2 @@
+
+executable('flap', 'flap.cpp')
