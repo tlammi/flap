@@ -45,5 +45,9 @@ TEST(Function, OneLineDefinition) {
     ASSERT_THAT(tokens,
                 testing::ElementsAre(Symbol, Colon, Paren, ParenClose, Arrow,
                                      Symbol, Define, IntLiteral, Eof));
+    auto strs = to_strs(lexemes);
+    ASSERT_EQ(strs.at(0), "main");
+    ASSERT_EQ(strs.at(5), "i32");
+    ASSERT_EQ(strs.at(7), "42");
 }
 
