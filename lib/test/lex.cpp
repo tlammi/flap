@@ -29,8 +29,9 @@ TEST(Function, Declaration) {
     auto lexemes = l.lex_all();
     auto tokens = to_tokens(lexemes);
     using enum lex::Token;
-    ASSERT_THAT(tokens, testing::ElementsAre(Symbol, Colon, Paren, ParenClose,
-                                             Arrow, Symbol, Eof));
+    ASSERT_THAT(tokens,
+                testing::ElementsAre(Identifier, Colon, Paren, ParenClose,
+                                     Arrow, Identifier, Eof));
     auto strs = to_strs(lexemes);
     ASSERT_EQ(strs.at(0), "main");
     ASSERT_EQ(strs.at(5), "i32");
@@ -42,9 +43,9 @@ TEST(Function, OneLineDefinition) {
     auto lexemes = l.lex_all();
     auto tokens = to_tokens(lexemes);
     using enum lex::Token;
-    ASSERT_THAT(tokens,
-                testing::ElementsAre(Symbol, Colon, Paren, ParenClose, Arrow,
-                                     Symbol, Define, IntLiteral, Eof));
+    ASSERT_THAT(tokens, testing::ElementsAre(Identifier, Colon, Paren,
+                                             ParenClose, Arrow, Identifier,
+                                             Define, IntLiteral, Eof));
     auto strs = to_strs(lexemes);
     ASSERT_EQ(strs.at(0), "main");
     ASSERT_EQ(strs.at(5), "i32");

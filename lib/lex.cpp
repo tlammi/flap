@@ -26,7 +26,7 @@ std::optional<Lexeme> lex_no_value(std::string_view& str,
     return std::nullopt;
 }
 
-std::optional<Lexeme> lex_symbol(std::string_view& str) {
+std::optional<Lexeme> lex_identifier(std::string_view& str) {
     std::cerr << str << '\n';
     if (str.empty()) return std::nullopt;
     const auto f = str.front();
@@ -45,7 +45,7 @@ std::optional<Lexeme> lex_symbol(std::string_view& str) {
     }
     auto res = str.substr(0, idx);
     str.remove_prefix(idx);
-    return Lexeme{Token::Symbol, res};
+    return Lexeme{Token::Identifier, res};
 }
 
 std::optional<Lexeme> lex_int_literal(std::string_view& str) {
@@ -99,7 +99,7 @@ Lexeme Lexer::next() {
     LEX_NO_VALUE("}", BraceClose);
     LEX_NO_VALUE("->", Arrow);
     LEX_NO_VALUE("\n", Eol);
-    if (auto lex = lex_symbol(m_data)) return *lex;
+    if (auto lex = lex_identifier(m_data)) return *lex;
     if (auto lex = lex_int_literal(m_data)) return *lex;
     std::cerr << m_data << '\n';
     throw std::runtime_error("asdfasf");

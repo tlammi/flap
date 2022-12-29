@@ -18,7 +18,7 @@ enum class Token {
     IntLiteral,    // 0 or 49 or 101 etc.
     Eol,           // End of line
     Eof,           // End of file
-    Symbol,        // Symbols like main, myvar, ...
+    Identifier,    // Identifiers like main, myvar, ...
 };
 
 struct Lexeme {
