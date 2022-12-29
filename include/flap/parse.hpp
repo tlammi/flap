@@ -1,10 +1,11 @@
 #pragma once
 
-#include <flap/consumer.hpp>
-#include <flap/document.hpp>
+#include <flap/ast/ast.hpp>
+#include <memory>
+#include <string_view>
 
 namespace flap {
 
-void parse(Consumer& consumer, Document doc);
+std::unique_ptr<ast::Ast> parse(std::string_view doc);
 
 }

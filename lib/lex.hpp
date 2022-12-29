@@ -29,7 +29,7 @@ struct Lexeme {
 class Lexer {
  public:
     Lexer() {}
-    Lexer(std::string_view data) : m_data{data} {}
+    explicit Lexer(std::string_view data) : m_data{data} {}
 
     Lexer(const Lexer&) = delete;
     Lexer& operator=(const Lexer&) = delete;
