@@ -36,3 +36,14 @@ TEST(Function, Declaration) {
     ASSERT_EQ(strs.at(5), "i32");
 }
 
+TEST(Function, OneLineDefinition) {
+    static constexpr std::string_view data = "main: () -> i32 := 42";
+    lex::Lexer l{data};
+    auto lexemes = l.lex_all();
+    auto tokens = to_tokens(lexemes);
+    using enum lex::Token;
+    ASSERT_THAT(tokens,
+                testing::ElementsAre(Symbol, Colon, Paren, ParenClose, Arrow,
+                                     Symbol, Define, IntLiteral, Eof));
+}
+

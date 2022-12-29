@@ -6,6 +6,16 @@
 
 namespace flap::lib::lex {
 
+constexpr bool is_hex(char c) {
+    const auto no = c >= '0' && c <= '9';
+    const auto big = c >= 'A' && c <= 'Z';
+    const auto small = c >= 'a' && c <= 'z';
+    return no || big || small;
+}
+
+constexpr bool is_bin(char c) { return c == '1' || c == '0'; }
+constexpr bool is_dec(char c) { return c >= '0' && c <= '9'; }
+
 template <Token T>
 std::optional<Lexeme> lex_no_value(std::string_view& str,
                                    std::string_view prefix) {
@@ -36,6 +46,25 @@ std::optional<Lexeme> lex_symbol(std::string_view& str) {
     auto res = str.substr(0, idx);
     str.remove_prefix(idx);
     return Lexeme{Token::Symbol, res};
+}
+
+std::optional<Lexeme> lex_int_literal(std::string_view& str) {
+    size_t idx = 0;
+    if (str.starts_with("0x")) {
+        idx = 2;
+        while (idx < str.size() && is_hex(str.at(idx))) ++idx;
+    } else if (str.starts_with("0b")) {
+        idx = 2;
+        while (idx < str.size() && is_bin(str.at(idx))) ++idx;
+    } else {
+        while (idx < str.size() && is_dec(str.at(idx))) ++idx;
+    }
+
+    if (!idx || (idx < str.size() && !std::isspace(str.at(idx))))
+        return std::nullopt;
+    auto res = str.substr(0, idx);
+    str.remove_prefix(idx);
+    return Lexeme{Token::IntLiteral, res};
 }
 
 void skip(std::string_view& str) {
@@ -71,6 +100,7 @@ Lexeme Lexer::next() {
     LEX_NO_VALUE("->", Arrow);
     LEX_NO_VALUE("\n", Eol);
     if (auto lex = lex_symbol(m_data)) return *lex;
+    if (auto lex = lex_int_literal(m_data)) return *lex;
     std::cerr << m_data << '\n';
     throw std::runtime_error("asdfasf");
 }
