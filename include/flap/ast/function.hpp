@@ -5,11 +5,9 @@
 
 namespace flap::ast {
 
-class Function final : public Ast {
+class Function : public Ast {
  public:
-    void accept(Consumer& c) const override;
-
-    std::string_view return_type() const noexcept;
-    std::string_view name() const noexcept;
+    virtual std::string_view return_type() const noexcept = 0;
+    virtual std::string_view name() const noexcept = 0;
 };
 }  // namespace flap::ast

@@ -11,7 +11,7 @@ class Debug final : public Consumer {
         std::cerr << "module\n";
     }
     void consume(const ast::Function& func) override {
-        std::cerr << "function\n";
+        std::cerr << func.name() << ": () -> " << func.return_type() << '\n';
     }
     void consume(const ast::IntLiteral& lit) override {
         std::cerr << "integer literal\n";
