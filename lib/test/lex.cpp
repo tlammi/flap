@@ -15,7 +15,7 @@ std::vector<lex::Token> to_tokens(const std::vector<lex::Lexeme>& lexemes) {
 }
 
 TEST(Function, Declaration) {
-    static constexpr std::string_view data = "main : () -> i32";
+    static constexpr std::string_view data = "main: () -> i32";
     lex::Lexer l{data};
     auto lexemes = l.lex_all();
     auto tokens = to_tokens(lexemes);

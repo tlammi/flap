@@ -18,11 +18,21 @@ std::optional<Lexeme> lex_no_value(std::string_view& str,
 
 std::optional<Lexeme> lex_symbol(std::string_view& str) {
     std::cerr << str << '\n';
-    size_t idx = 0;
-    while (str.size() > idx && !std::isspace(str.at(idx))) {
-        ++idx;
+    if (str.empty()) return std::nullopt;
+    const auto f = str.front();
+    if ((f < 'A' || (f > 'Z' && f < 'a') || f > 'z') && f != '_')
+        return std::nullopt;
+    size_t idx = 1;
+
+    while (str.size() > idx) {
+        const auto c = str.at(idx);
+        if ((c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z') ||
+            (c >= '0' && c <= '9') || c == '_') {
+            ++idx;
+        } else {
+            break;
+        }
     }
-    if (idx == 0) return std::nullopt;
     auto res = str.substr(0, idx);
     str.remove_prefix(idx);
     return Lexeme{Token::Symbol, res};
