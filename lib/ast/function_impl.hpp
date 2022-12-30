@@ -4,7 +4,7 @@
 #include <flap/consumer.hpp>
 
 #include "ast/scope.hpp"
-namespace flap::lib::ast {
+namespace flap::ast {
 
 class FunctionImpl final : public ::flap::ast::Function, public Scope {
  public:
@@ -28,4 +28,4 @@ class FunctionImpl final : public ::flap::ast::Function, public Scope {
     std::string_view m_ret;
     std::unique_ptr<IntLiteral> m_i_lit{};
 };
-}  // namespace flap::lib::ast
+}  // namespace flap::ast

@@ -3,7 +3,7 @@
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
-namespace lex = flap::lib::lex;
+namespace lex = flap::lex;
 
 std::vector<lex::Token> to_tokens(const std::vector<lex::Lexeme>& lexemes) {
     std::vector<lex::Token> tokens{};

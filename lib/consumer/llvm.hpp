@@ -1,6 +1,6 @@
 #include <flap/consumer.hpp>
 
-namespace flap::lib::consumer {
+namespace flap::consumer {
 
 class Llvm final : public Consumer {
  public:
@@ -11,4 +11,4 @@ class Llvm final : public Consumer {
  private:
 };
 
-}  // namespace flap::lib::consumer
+}  // namespace flap::consumer

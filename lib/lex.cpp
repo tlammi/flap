@@ -4,7 +4,7 @@
 #include <optional>
 #include <stdexcept>
 
-namespace flap::lib::lex {
+namespace flap::lex {
 
 constexpr bool is_hex(char c) {
     const auto no = c >= '0' && c <= '9';
@@ -114,4 +114,4 @@ std::vector<Lexeme> Lexer::lex_all() {
     }
     return out;
 }
-}  // namespace flap::lib::lex
+}  // namespace flap::lex

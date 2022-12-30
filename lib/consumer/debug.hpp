@@ -3,7 +3,7 @@
 #include <flap/consumer.hpp>
 #include <iostream>
 
-namespace flap::lib::consumer {
+namespace flap::consumer {
 
 class Debug final : public Consumer {
  public:
@@ -17,4 +17,4 @@ class Debug final : public Consumer {
         std::cerr << "integer literal: " << lit.value() << '\n';
     }
 };
-}  // namespace flap::lib::consumer
+}  // namespace flap::consumer

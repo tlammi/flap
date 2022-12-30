@@ -2,7 +2,7 @@
 
 #include "util/cast.hpp"
 
-namespace flap::lib::util {
+namespace flap::util {
 
 template <class E, class V, size_t S = underlying_cast(E::COUNT_)>
 class EnumArr {
@@ -40,4 +40,4 @@ constexpr EnumArr<E, V> make_enum_arr(Ts&&... ts) {
     detail::do_assign(ea, std::forward<Ts>(ts)...);
     return ea;
 }
-}  // namespace flap::lib::util
+}  // namespace flap::util

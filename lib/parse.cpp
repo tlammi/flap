@@ -1,12 +1,11 @@
+#include <flap/ast/int_literal.hpp>
 #include <flap/parse.hpp>
 
 #include "ast/function_impl.hpp"
-#include "ast/int_literal.hpp"
 #include "ast/module_impl.hpp"
 #include "lex.hpp"
 
 namespace flap {
-namespace lib {
 namespace {
 
 class Parser {
@@ -70,13 +69,9 @@ class Parser {
 };
 }  // namespace
 
-std::unique_ptr<flap::ast::Ast> parse(std::string_view doc) {
+std::unique_ptr<ast::Ast> parse(std::string_view doc) {
     Parser p{doc};
     return p.parse();
 }
 
-}  // namespace lib
-std::unique_ptr<flap::ast::Ast> parse(std::string_view doc) {
-    return ::flap::lib::parse(doc);
-}
 }  // namespace flap

@@ -1,13 +1,13 @@
 #pragma once
 
+#include <flap/ast/function.hpp>
+#include <flap/ast/module.hpp>
 #include <memory>
 #include <vector>
 
-#include "ast/function.hpp"
-#include "ast/module.hpp"
 #include "ast/scope.hpp"
 
-namespace flap::lib::ast {
+namespace flap::ast {
 
 class ModuleImpl : public Module, public Scope {
  public:
@@ -20,4 +20,4 @@ class ModuleImpl : public Module, public Scope {
  private:
     std::vector<std::unique_ptr<Function>> m_funcs{};
 };
-}  // namespace flap::lib::ast
+}  // namespace flap::ast

@@ -2,7 +2,7 @@
 
 #include "util.hpp"
 
-using namespace flap::lib::util;
+using namespace flap::util;
 
 enum class Enum {
     A,

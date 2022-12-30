@@ -6,10 +6,10 @@
 namespace flap {
 
 std::unique_ptr<Consumer> llvm_consumer() {
-    return std::make_unique<lib::consumer::Llvm>();
+    return std::make_unique<consumer::Llvm>();
 }
 
 std::unique_ptr<Consumer> debug_consumer() {
-    return std::make_unique<lib::consumer::Debug>();
+    return std::make_unique<consumer::Debug>();
 }
 }  // namespace flap

@@ -1,9 +1,9 @@
 #pragma once
 
-#include "ast/function.hpp"
-#include "ast/int_literal.hpp"
+#include <flap/ast/function.hpp>
+#include <flap/ast/int_literal.hpp>
 
-namespace flap::lib::ast {
+namespace flap::ast {
 
 /**
  * Scope is an entity which can contain other ASTs
@@ -29,4 +29,4 @@ class Scope {
     }
 };
 
-}  // namespace flap::lib::ast
+}  // namespace flap::ast

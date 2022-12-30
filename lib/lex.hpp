@@ -3,7 +3,7 @@
 #include <string_view>
 #include <vector>
 
-namespace flap::lib::lex {
+namespace flap::lex {
 
 enum class Token {
     Colon,         // :
@@ -47,4 +47,4 @@ class Lexer {
     std::string_view m_data{};
 };
 
-}  // namespace flap::lib::lex
+}  // namespace flap::lex
