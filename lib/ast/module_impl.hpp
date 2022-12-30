@@ -1,15 +1,15 @@
 #pragma once
 
-#include <flap/ast/function.hpp>
-#include <flap/ast/module.hpp>
 #include <memory>
 #include <vector>
 
-#include "ast/ast_priv.hpp"
+#include "ast/function.hpp"
+#include "ast/module.hpp"
+#include "ast/scope.hpp"
 
 namespace flap::lib::ast {
 
-class ModuleImpl : public ::flap::ast::Module, public AstPriv {
+class ModuleImpl : public Module, public Scope {
  public:
     void accept(Consumer& consumer) const noexcept override;
 
@@ -18,6 +18,6 @@ class ModuleImpl : public ::flap::ast::Module, public AstPriv {
     }
 
  private:
-    std::vector<std::unique_ptr<flap::ast::Function>> m_funcs{};
+    std::vector<std::unique_ptr<Function>> m_funcs{};
 };
 }  // namespace flap::lib::ast

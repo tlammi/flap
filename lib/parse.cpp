@@ -1,6 +1,7 @@
 #include <flap/parse.hpp>
 
 #include "ast/function_impl.hpp"
+#include "ast/int_literal.hpp"
 #include "ast/module_impl.hpp"
 #include "lex.hpp"
 
@@ -14,8 +15,7 @@ class Parser {
 
     std::unique_ptr<flap::ast::Ast> parse() {
         auto mod = std::make_unique<ast::ModuleImpl>();
-        m_scope = mod.get();
-        parse_primary();
+        parse_primary(*mod);
         return mod;
     }
 
@@ -23,13 +23,13 @@ class Parser {
     /**
      * Start parsing from "root" of the document
      * */
-    void parse_primary() {
+    void parse_primary(ast::Scope& scope) {
         auto lexeme = m_lexer.next();
         m_stack.push_back(lexeme);
         using enum lex::Token;
         switch (lexeme.token) {
             case Identifier:
-                parse_identifier();
+                parse_identifier(scope);
             case Eof:
                 return;
             default:
@@ -37,7 +37,7 @@ class Parser {
         }
     }
 
-    void parse_identifier() {
+    void parse_identifier(ast::Scope& scope) {
         using enum lex::Token;
         auto lexeme = m_lexer.next();
         if (lexeme.token != Colon) do_throw();
@@ -56,11 +56,10 @@ class Parser {
         if (lexeme.token != IntLiteral) do_throw();
         auto func = std::make_unique<ast::FunctionImpl>(m_stack.back().value,
                                                         return_type);
+        func->add_int_literal(std::make_unique<ast::IntLiteral>(lexeme.value));
         m_stack.clear();
-        m_scope->add_function(std::move(func));
+        scope.add_function(std::move(func));
     }
-
-    std::unique_ptr<flap::ast::Ast> parse_expr() { using enum lex::Token; }
 
     [[noreturn]] static void do_throw() {
         throw std::runtime_error("Unexpected token");
@@ -68,7 +67,6 @@ class Parser {
 
     lex::Lexer m_lexer;
     std::vector<lex::Lexeme> m_stack{};
-    ast::AstPriv* m_scope{nullptr};
 };
 }  // namespace
 

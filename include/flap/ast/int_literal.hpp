@@ -1,6 +1,7 @@
 #pragma once
 
 #include <flap/ast/ast.hpp>
+#include <string_view>
 
 namespace flap::ast {
 
@@ -9,6 +10,7 @@ class IntLiteral : public Ast {
     static constexpr std::string_view bin = "0b";
 
  public:
+    explicit IntLiteral(std::string_view value) : m_value{value} {}
     void accept(Consumer& consumer) const override;
 
     /// Whole literal value

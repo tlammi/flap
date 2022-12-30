@@ -14,7 +14,7 @@ class Debug final : public Consumer {
         std::cerr << func.name() << ": () -> " << func.return_type() << '\n';
     }
     void consume(const ast::IntLiteral& lit) override {
-        std::cerr << "integer literal\n";
+        std::cerr << "integer literal: " << lit.value() << '\n';
     }
 };
 }  // namespace flap::lib::consumer
