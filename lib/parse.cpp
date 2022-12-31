@@ -22,7 +22,7 @@ class Parser {
     /**
      * Start parsing from "root" of the document
      * */
-    void parse_primary(ast::Scope& scope) {
+    void parse_primary(ast::FunctionScope& scope) {
         auto lexeme = m_lexer.next();
         m_stack.push_back(lexeme);
         using enum lex::Token;
@@ -36,7 +36,7 @@ class Parser {
         }
     }
 
-    void parse_identifier(ast::Scope& scope) {
+    void parse_identifier(ast::FunctionScope& scope) {
         using enum lex::Token;
         auto lexeme = m_lexer.next();
         if (lexeme.token != Colon) do_throw();
@@ -55,9 +55,9 @@ class Parser {
         if (lexeme.token != IntLiteral) do_throw();
         auto func = std::make_unique<ast::FunctionImpl>(m_stack.back().value,
                                                         return_type);
-        func->add_int_literal(std::make_unique<ast::IntLiteral>(lexeme.value));
+        func->add(std::make_unique<ast::IntLiteral>(lexeme.value));
         m_stack.clear();
-        scope.add_function(std::move(func));
+        scope.add(std::move(func));
     }
 
     [[noreturn]] static void do_throw() {

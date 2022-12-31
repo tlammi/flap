@@ -9,11 +9,11 @@
 
 namespace flap::ast {
 
-class ModuleImpl : public Module, public Scope {
+class ModuleImpl : public Module, public FunctionScope {
  public:
     void accept(Consumer& consumer) const noexcept override;
 
-    void add_function(std::unique_ptr<flap::ast::Function>&& f) override {
+    void add(std::unique_ptr<ast::Function>&& f) override {
         m_funcs.push_back(std::move(f));
     }
 

@@ -8,25 +8,19 @@ namespace flap::ast {
 /**
  * Scope is an entity which can contain other ASTs
  *
- * Pretty much every AST class inherits this and handles all sub-ASTs it
- * supports and throws otherwise.
+ * This is generally inherited by AST implementations and used in parsing to
+ * construct ASTs.
+ *
  * */
+template <class T>
 class Scope {
  public:
     virtual ~Scope() {}
 
-    /**
-     * Add a new function to the scope
-     * */
-    virtual void add_function(std::unique_ptr<Function>&& f) { do_throw(); }
-    virtual void add_int_literal(std::unique_ptr<IntLiteral>&& i) {
-        do_throw();
-    }
-
- private:
-    [[noreturn]] static void do_throw() {
-        throw std::runtime_error("Unsupported AST in this scope");
-    }
+    virtual void add(std::unique_ptr<T>&& entry) = 0;
 };
+
+using FunctionScope = Scope<Function>;
+using IntLiteralScope = Scope<IntLiteral>;
 
 }  // namespace flap::ast
