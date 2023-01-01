@@ -14,8 +14,9 @@ class FunctionImpl final : public ::flap::ast::Function, public StmtScope {
         : m_name{name}, m_ret{return_type} {}
 
     void accept(Consumer& consumer) const {
-        consumer.consume(*this);
-        for (const auto& s : m_stmts) s->accept(consumer);
+        auto recurse = consumer.consume(*this);
+        if (recurse == Recurse::Yes)
+            for (const auto& s : m_stmts) s->accept(consumer);
     }
 
     std::string_view return_type() const noexcept override { return m_ret; }

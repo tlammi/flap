@@ -9,6 +9,9 @@
 
 namespace flap {
 
+/// Control if the AST should recurse into its children when consuming
+enum class Recurse { No, Yes };
+
 /**
  * Base class for consuming ASTs
  *
@@ -21,10 +24,10 @@ class Consumer {
     Consumer() = default;
     virtual ~Consumer() = default;
 
-    virtual void consume(const ast::Module& module_) {}
-    virtual void consume(const ast::Function& func) {}
-    virtual void consume(const ast::RetStmt& ret) {}
-    virtual void consume(const ast::IntLiteral& lit) {}
+    virtual Recurse consume(const ast::Module& module_) { return Recurse::Yes; }
+    virtual Recurse consume(const ast::Function& func) { return Recurse::Yes; }
+    virtual Recurse consume(const ast::RetStmt& ret) { return Recurse::Yes; }
+    virtual Recurse consume(const ast::IntLiteral& lit) { return Recurse::Yes; }
 };
 
 /**

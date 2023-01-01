@@ -16,22 +16,24 @@ namespace flap::consumer {
 
 class Llvm final : public Consumer {
  public:
-    void consume(const ast::Module& module_) override {}
-    void consume(const ast::Function& func) override {
+    // Recurse consume(const ast::Module& module_) override {
+    // }
+    Recurse consume(const ast::Function& func) override {
         auto* ft =
             llvm::FunctionType::get(llvm::Type::getInt32Ty(m_ctx), false);
         m_func = llvm::Function::Create(ft, llvm::Function::ExternalLinkage,
                                         func.name(), &m_mod);
         auto* bb = llvm::BasicBlock::Create(m_ctx, "entry", m_func);
         m_builder.SetInsertPoint(bb);
+        return Recurse::Yes;
     }
 
-    void consume(const ast::RetStmt& stmt) override {
-        // no-op for now
+    Recurse consume(const ast::RetStmt& stmt) override {
+        stmt.expr().accept(*this);
+        return Recurse::No;
     }
 
-    void consume(const ast::IntLiteral& lit) override {
-        consumer.consume(*m_expr);
+    Recurse consume(const ast::IntLiteral& lit) override {
         auto* val = llvm::ConstantInt::get(
             m_ctx, llvm::APInt(32, lit.value(), lit.radix()));
         m_builder.CreateRet(val);
@@ -39,6 +41,7 @@ class Llvm final : public Consumer {
 
         // m_mod.print(llvm::errs(), nullptr);
         m_mod.print(llvm::outs(), nullptr);
+        return Recurse::Yes;
     }
 
  private:
