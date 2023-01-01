@@ -52,3 +52,18 @@ TEST(Function, OneLineDefinition) {
     ASSERT_EQ(strs.at(7), "42");
 }
 
+TEST(Comment, WithMain) {
+    static constexpr std::string_view data = R"(
+// this is a test comment
+main: () -> i32 := 4
+
+)";
+    lex::Lexer l{data};
+    auto lexemes = l.lex_all();
+    auto tokens = to_tokens(lexemes);
+    using enum lex::Token;
+    ASSERT_THAT(tokens,
+                testing::ElementsAre(CommentOneLine, Identifier, Colon, Paren,
+                                     ParenClose, Arrow, Identifier, Define,
+                                     IntLiteral, Eof));
+}
