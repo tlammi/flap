@@ -60,8 +60,7 @@ std::optional<Lexeme> lex_int_literal(std::string_view& str) {
         while (idx < str.size() && is_dec(str.at(idx))) ++idx;
     }
 
-    if (!idx || (idx < str.size() && !std::isspace(str.at(idx))))
-        return std::nullopt;
+    if (!idx) return std::nullopt;
     auto res = str.substr(0, idx);
     str.remove_prefix(idx);
     return Lexeme{Token::IntLiteral, res};
@@ -99,6 +98,7 @@ Lexeme Lexer::next() {
     LEX_NO_VALUE("}", BraceClose);
     LEX_NO_VALUE("->", Arrow);
     LEX_NO_VALUE("\n", Eol);
+    LEX_NO_VALUE("return", Return);
     if (auto lex = lex_identifier(m_data)) return *lex;
     if (auto lex = lex_int_literal(m_data)) return *lex;
     std::cerr << m_data << '\n';

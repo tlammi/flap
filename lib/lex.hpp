@@ -16,6 +16,7 @@ enum class Token {
     Define,        // :=
     Arrow,         // ->
     IntLiteral,    // 0 or 49 or 101 etc.
+    Return,        // return
     Eol,           // End of line
     Eof,           // End of file
     Identifier,    // Identifiers like main, myvar, ...

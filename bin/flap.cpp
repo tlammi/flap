@@ -6,7 +6,7 @@
 using namespace std::literals::string_view_literals;
 
 int main(int argc, char** argv) {
-    auto ast = flap::parse("main: () -> i32 := 42");
+    auto ast = flap::parse("main: () -> i32 := {return 42}");
     std::unique_ptr<flap::Consumer> consumer{};
     if (argc < 2 || argv[1] == "--debug"sv)
         consumer = flap::debug_consumer();
