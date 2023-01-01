@@ -25,7 +25,13 @@ class Llvm final : public Consumer {
         auto* bb = llvm::BasicBlock::Create(m_ctx, "entry", m_func);
         m_builder.SetInsertPoint(bb);
     }
+
+    void consume(const ast::RetStmt& stmt) override {
+        // no-op for now
+    }
+
     void consume(const ast::IntLiteral& lit) override {
+        consumer.consume(*m_expr);
         auto* val = llvm::ConstantInt::get(
             m_ctx, llvm::APInt(32, lit.value(), lit.radix()));
         m_builder.CreateRet(val);

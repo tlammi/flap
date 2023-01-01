@@ -1,11 +1,11 @@
 #pragma once
 
-#include <flap/ast/ast.hpp>
+#include <flap/ast/expr.hpp>
 #include <string_view>
 
 namespace flap::ast {
 
-class IntLiteral : public Ast {
+class IntLiteral : public Expr {
     static constexpr std::string_view hex = "0x";
     static constexpr std::string_view bin = "0b";
 

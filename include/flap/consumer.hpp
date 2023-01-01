@@ -4,6 +4,7 @@
 #include <flap/ast/function.hpp>
 #include <flap/ast/int_literal.hpp>
 #include <flap/ast/module.hpp>
+#include <flap/ast/ret_stmt.hpp>
 #include <memory>
 
 namespace flap {
@@ -20,9 +21,10 @@ class Consumer {
     Consumer() = default;
     virtual ~Consumer() = default;
 
-    virtual void consume(const ast::Module& module_) = 0;
-    virtual void consume(const ast::Function& func) = 0;
-    virtual void consume(const ast::IntLiteral& lit) = 0;
+    virtual void consume(const ast::Module& module_) {}
+    virtual void consume(const ast::Function& func) {}
+    virtual void consume(const ast::RetStmt& ret) {}
+    virtual void consume(const ast::IntLiteral& lit) {}
 };
 
 /**

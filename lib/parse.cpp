@@ -3,6 +3,7 @@
 
 #include "ast/function_impl.hpp"
 #include "ast/module_impl.hpp"
+#include "ast/ret_stmt_impl.hpp"
 #include "lex.hpp"
 
 namespace flap {
@@ -55,7 +56,9 @@ class Parser {
         if (lexeme.token != IntLiteral) do_throw();
         auto func = std::make_unique<ast::FunctionImpl>(m_stack.back().value,
                                                         return_type);
-        func->add(std::make_unique<ast::IntLiteral>(lexeme.value));
+        auto ret = std::make_unique<ast::RetStmtImpl>();
+        ret->add(std::make_unique<ast::IntLiteral>(lexeme.value));
+        func->add(std::move(ret));
         m_stack.clear();
         scope.add(std::move(func));
     }
