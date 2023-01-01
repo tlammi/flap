@@ -1,5 +1,6 @@
 #include <flap/ast/int_literal.hpp>
 #include <flap/parse.hpp>
+#include <fstream>
 
 #include "ast/function_impl.hpp"
 #include "ast/module_impl.hpp"
@@ -91,9 +92,20 @@ class Parser {
 };
 }  // namespace
 
-std::unique_ptr<ast::Ast> parse(std::string_view doc) {
+std::unique_ptr<ast::Ast> parse_view(std::string_view doc) {
     Parser p{doc};
     return p.parse();
+}
+Doc parse(std::istream& s) {
+    std::istreambuf_iterator<char> begin{s};
+    std::istreambuf_iterator<char> end{};
+    std::string doc{begin, end};
+    auto ast = parse_view(doc);
+    return {std::move(doc), std::move(ast)};
+}
+Doc parse_file(const std::filesystem::path& path) {
+    std::ifstream fs{path};
+    return parse(fs);
 }
 
 }  // namespace flap

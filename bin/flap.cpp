@@ -6,14 +6,21 @@
 using namespace std::literals::string_view_literals;
 
 int main(int argc, char** argv) {
-    auto ast = flap::parse("main: () -> i32 := {return 42}");
+    std::unique_ptr<flap::ast::Ast> ast{};
     std::unique_ptr<flap::Consumer> consumer{};
-    if (argc < 2 || argv[1] == "--debug"sv)
+    std::string data{};
+    if (argc < 2 || argv[1] == "--debug"sv) {
         consumer = flap::debug_consumer();
-    else if (argv[1] == "--llvm"sv)
+        ast = flap::parse_view("main: () -> i32 := {return 42}");
+    } else if (argv[1] == "--llvm"sv) {
         consumer = flap::llvm_consumer();
-    else
-        throw std::runtime_error("Invalid usage");
+        ast = flap::parse_view("main: () -> i32 := {return 42}");
+    } else {
+        consumer = flap::llvm_consumer();
+        auto [data_, ast_] = flap::parse_file(argv[1]);
+        data = std::move(data_);
+        ast = std::move(ast_);
+    }
     ast->accept(*consumer);
 }
 
