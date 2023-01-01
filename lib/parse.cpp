@@ -28,7 +28,6 @@ class Parser {
      * */
     void parse_primary(ast::FunctionScope& scope) {
         auto lexeme = m_lexer.next();
-        m_stack.push_back(lexeme);
         using enum lex::Token;
         switch (lexeme.token) {
             case Identifier:
@@ -46,6 +45,7 @@ class Parser {
 
     void parse_identifier(ast::FunctionScope& scope) {
         using enum lex::Token;
+        auto first_lexeme = m_lexer.current();
         auto lexeme = m_lexer.next();
         if (lexeme.token != Colon) do_throw();
         lexeme = m_lexer.next();
@@ -61,12 +61,11 @@ class Parser {
         if (lexeme.token != Define) do_throw();
         lexeme = m_lexer.next();
         if (lexeme.token == IntLiteral) {
-            auto func = std::make_unique<ast::FunctionImpl>(
-                m_stack.back().value, return_type);
+            auto func = std::make_unique<ast::FunctionImpl>(first_lexeme.value,
+                                                            return_type);
             auto ret = std::make_unique<ast::RetStmtImpl>();
             ret->add(std::make_unique<ast::IntLiteral>(lexeme.value));
             func->add(std::move(ret));
-            m_stack.clear();
             scope.add(std::move(func));
             return;
         }
@@ -75,12 +74,11 @@ class Parser {
             if (lexeme.token != Return) do_throw();
             lexeme = m_lexer.next();
             if (lexeme.token != IntLiteral) do_throw();
-            auto func = std::make_unique<ast::FunctionImpl>(
-                m_stack.back().value, return_type);
+            auto func = std::make_unique<ast::FunctionImpl>(first_lexeme.value,
+                                                            return_type);
             auto ret = std::make_unique<ast::RetStmtImpl>();
             ret->add(std::make_unique<ast::IntLiteral>(lexeme.value));
             func->add(std::move(ret));
-            m_stack.clear();
             scope.add(std::move(func));
             lexeme = m_lexer.next();
             if (lexeme.token != BraceClose) do_throw();
@@ -94,7 +92,6 @@ class Parser {
     }
 
     lex::Lexer m_lexer;
-    std::vector<lex::Lexeme> m_stack{};
 };
 }  // namespace
 
