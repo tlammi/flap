@@ -14,6 +14,11 @@
 
 namespace flap::consumer {
 
+enum class State {
+    None,
+    RetStmt,
+};
+
 class Llvm final : public Consumer {
  public:
     // Recurse consume(const ast::Module& module_) override {
@@ -29,6 +34,7 @@ class Llvm final : public Consumer {
     }
 
     Recurse consume(const ast::RetStmt& stmt) override {
+        m_state = State::RetStmt;
         stmt.expr().accept(*this);
         return Recurse::No;
     }
@@ -36,11 +42,15 @@ class Llvm final : public Consumer {
     Recurse consume(const ast::IntLiteral& lit) override {
         auto* val = llvm::ConstantInt::get(
             m_ctx, llvm::APInt(32, lit.value(), lit.radix()));
-        m_builder.CreateRet(val);
-        llvm::verifyFunction(*m_func);
+        if (m_state == State::RetStmt) {
+            m_builder.CreateRet(val);
+            llvm::verifyFunction(*m_func);
 
-        // m_mod.print(llvm::errs(), nullptr);
-        m_mod.print(llvm::outs(), nullptr);
+            // m_mod.print(llvm::errs(), nullptr);
+            m_mod.print(llvm::outs(), nullptr);
+        } else {
+            throw std::runtime_error("Unimplemented");
+        }
         return Recurse::Yes;
     }
 
@@ -49,6 +59,7 @@ class Llvm final : public Consumer {
     llvm::Module m_mod{"flap WIP", m_ctx};
     llvm::IRBuilder<> m_builder{m_ctx};
     llvm::Function* m_func{};
+    State m_state{};
 };
 
 }  // namespace flap::consumer
