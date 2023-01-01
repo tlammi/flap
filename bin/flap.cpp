@@ -1,4 +1,7 @@
 
+#include <CLI/App.hpp>
+#include <CLI/Config.hpp>
+#include <CLI/Formatter.hpp>
 #include <flap/flap.hpp>
 #include <iostream>
 #include <string_view>
@@ -6,21 +9,21 @@
 using namespace std::literals::string_view_literals;
 
 int main(int argc, char** argv) {
-    std::unique_ptr<flap::ast::Ast> ast{};
-    std::unique_ptr<flap::Consumer> consumer{};
-    std::string data{};
-    if (argc < 2 || argv[1] == "--debug"sv) {
-        consumer = flap::debug_consumer();
-        ast = flap::parse_view("main: () -> i32 := {return 42}");
-    } else if (argv[1] == "--llvm"sv) {
-        consumer = flap::llvm_consumer();
-        ast = flap::parse_view("main: () -> i32 := {return 42}");
-    } else {
-        consumer = flap::llvm_consumer();
-        auto [data_, ast_] = flap::parse_file(argv[1]);
-        data = std::move(data_);
-        ast = std::move(ast_);
-    }
-    ast->accept(*consumer);
+    CLI::App app{"flap compiler"};
+    std::string backend{"debug"};
+    std::filesystem::path source{};
+    app.add_option("-b,--backend", backend,
+                   R"(Backend to use. "debug" or "llvm")");
+
+    app.add_option("source", source,
+                   R"(Source file to compile or "-" for stdin)")
+        ->required();
+    CLI11_PARSE(app, argc, argv);
+
+    auto consumer =
+        backend == "debug" ? flap::debug_consumer() : flap::llvm_consumer();
+    auto doc = source == "-" ? flap::parse(std::cin) : flap::parse_file(source);
+
+    doc.root->accept(*consumer);
 }
 
