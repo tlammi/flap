@@ -66,6 +66,34 @@ std::optional<Lexeme> lex_int_literal(std::string_view& str) {
     return Lexeme{Token::IntLiteral, res};
 }
 
+std::optional<Lexeme> lex_comment_one_line(std::string_view& str) {
+    if (str.starts_with("//")) {
+        size_t idx = 2;
+        while (true) {
+            idx = str.find("\n", idx);
+            if (idx != std::string_view::npos) {
+                auto match = str.substr(0, idx);
+                str.remove_prefix(idx);
+                return Lexeme{Token::CommentOneLine, match};
+            }
+        }
+    }
+    return std::nullopt;
+}
+
+std::optional<Lexeme> lex_comment_multi_line(std::string_view& str) {
+    if (str.starts_with("/*")) {
+        auto idx = str.find("*/", 2);
+        if (idx != std::string_view::npos) {
+            idx = idx + 2;
+            auto match = str.substr(0, idx);
+            str.remove_prefix(idx);
+            return Lexeme{Token::CommentMultiLine, match};
+        }
+    }
+    return std::nullopt;
+}
+
 void skip(std::string_view& str) {
     while (str.starts_with(' ') || str.starts_with('\t') ||
            str.starts_with('\n'))
@@ -85,6 +113,13 @@ struct Matcher {
     if (auto lex = lex_no_value<token>(m_data, prefix)) return *lex
 
 Lexeme Lexer::next() {
+    m_current = next_impl();
+    return m_current;
+}
+
+Lexeme Lexer::current() const noexcept { return m_current; }
+
+Lexeme Lexer::next_impl() {
     skip(m_data);
     using enum Token;
     if (m_data.empty()) return {Eof, ""};
@@ -99,6 +134,8 @@ Lexeme Lexer::next() {
     LEX_NO_VALUE("->", Arrow);
     LEX_NO_VALUE("\n", Eol);
     LEX_NO_VALUE("return", Return);
+    if (auto lex = lex_comment_one_line(m_data)) return *lex;
+    if (auto lex = lex_comment_multi_line(m_data)) return *lex;
     if (auto lex = lex_identifier(m_data)) return *lex;
     if (auto lex = lex_int_literal(m_data)) return *lex;
     std::cerr << m_data << '\n';

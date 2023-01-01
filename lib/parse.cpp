@@ -16,7 +16,9 @@ class Parser {
 
     std::unique_ptr<flap::ast::Ast> parse() {
         auto mod = std::make_unique<ast::ModuleImpl>();
-        parse_primary(*mod);
+        while (m_lexer.current().token != lex::Token::Eof) {
+            parse_primary(*mod);
+        }
         return mod;
     }
 
@@ -31,6 +33,10 @@ class Parser {
         switch (lexeme.token) {
             case Identifier:
                 parse_identifier(scope);
+            case CommentOneLine:
+                break;
+            case CommentMultiLine:
+                break;
             case Eof:
                 return;
             default:

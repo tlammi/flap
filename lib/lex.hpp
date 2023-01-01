@@ -6,20 +6,22 @@
 namespace flap::lex {
 
 enum class Token {
-    Colon,         // :
-    Paren,         // (
-    ParenClose,    // )
-    Brace,         // {
-    BraceClose,    // }
-    Bracket,       // [
-    BracketClose,  // ]
-    Define,        // :=
-    Arrow,         // ->
-    IntLiteral,    // 0 or 49 or 101 etc.
-    Return,        // return
-    Eol,           // End of line
-    Eof,           // End of file
-    Identifier,    // Identifiers like main, myvar, ...
+    Colon,             // :
+    Paren,             // (
+    ParenClose,        // )
+    Brace,             // {
+    BraceClose,        // }
+    Bracket,           // [
+    BracketClose,      // ]
+    Define,            // :=
+    Arrow,             // ->
+    IntLiteral,        // 0 or 49 or 101 etc.
+    Return,            // return
+    CommentOneLine,    // //.*?\n
+    CommentMultiLine,  // /\*.*?\*/
+    Eol,               // End of line
+    Eof,               // End of file
+    Identifier,        // Identifiers like main, myvar, ...
 };
 
 struct Lexeme {
@@ -42,10 +44,14 @@ class Lexer {
 
     Lexeme next();
 
+    Lexeme current() const noexcept;
+
     std::vector<Lexeme> lex_all();
 
  private:
+    Lexeme next_impl();
     std::string_view m_data{};
+    Lexeme m_current{};
 };
 
 }  // namespace flap::lex
