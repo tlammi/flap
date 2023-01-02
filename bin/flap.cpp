@@ -24,16 +24,17 @@ int main(int argc, char** argv) {
         ->required();
     CLI11_PARSE(app, argc, argv);
 
-    if (debug) flap::set_log_stream(&std::cerr);
-    std::unique_ptr<flap::Consumer> consumer{};
-    if (backend == "debug")
-        consumer = flap::debug::make_consumer();
-    else if (backend == "llvm")
-        consumer = flap::llvm::make_consumer();
-    else
-        throw std::runtime_error("Invalid consumer");
-
     auto doc = source == "-" ? flap::parse(std::cin) : flap::parse_file(source);
-    doc.root->accept(*consumer);
+    if (debug) flap::set_log_stream(&std::cerr);
+    if (backend == "debug") {
+        auto consumer = flap::debug::make_consumer();
+        doc.root->accept(*consumer);
+    } else if (backend == "llvm") {
+        auto consumer = flap::llvm::make_consumer();
+        doc.root->accept(*consumer);
+        std::cout << consumer->llvm_ir();
+    } else {
+        throw std::runtime_error("Invalid consumer");
+    }
 }
 

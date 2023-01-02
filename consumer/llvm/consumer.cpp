@@ -10,7 +10,7 @@
 #include <llvm/IR/Type.h>
 #include <llvm/IR/Verifier.h>
 
-#include <flap/consumer.hpp>
+#include <flap/llvm/consumer.hpp>
 
 namespace flap::llvm {
 
@@ -48,7 +48,6 @@ class ConsumerImpl final : public Consumer {
         if (m_state == State::RetStmt) {
             m_builder.CreateRet(val);
             ::llvm::verifyFunction(*m_func);
-            m_mod.print(::llvm::outs(), nullptr);
             return Recurse::Yes;
         }
         throw std::runtime_error("Unimplemented");
@@ -60,11 +59,17 @@ class ConsumerImpl final : public Consumer {
         if (m_state == State::RetStmt) {
             m_builder.CreateRet(val);
             ::llvm::verifyFunction(*m_func);
-            m_mod.print(::llvm::outs(), nullptr);
         } else {
             throw std::runtime_error("Unimplemented");
         }
         return Recurse::Yes;
+    }
+
+    std::string llvm_ir() override {
+        std::string out{};
+        ::llvm::raw_string_ostream str{out};
+        m_mod.print(str, nullptr);
+        return out;
     }
 
  private:
