@@ -1,11 +1,10 @@
-#pragma once
 
 #include <flap/consumer.hpp>
 #include <iostream>
 
-namespace flap::consumer {
+namespace flap::debug {
 
-class Debug final : public Consumer {
+class ConsumerImpl final : public Consumer {
     using R = Recurse;
 
  public:
@@ -22,4 +21,9 @@ class Debug final : public Consumer {
         return R::Yes;
     }
 };
-}  // namespace flap::consumer
+
+std::unique_ptr<Consumer> make_consumer() {
+    std::cerr << "making consumer\n";
+    return std::make_unique<ConsumerImpl>();
+}
+}  // namespace flap::debug

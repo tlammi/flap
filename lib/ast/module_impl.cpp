@@ -2,6 +2,7 @@
 
 #include <flap/consumer.hpp>
 namespace flap::ast {
+
 void ModuleImpl::accept(Consumer& consumer) const noexcept {
     auto recurse = consumer.consume(*this);
     if (recurse == Recurse::Yes)

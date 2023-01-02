@@ -30,12 +30,4 @@ class Consumer {
     virtual Recurse consume(const ast::IntLiteral& lit) { return Recurse::Yes; }
 };
 
-/**
- * Consumer generating LLVM IR
- * */
-std::unique_ptr<Consumer> llvm_consumer();
-
-/// Produces information about the parsed code
-std::unique_ptr<Consumer> debug_consumer();
-
 }  // namespace flap

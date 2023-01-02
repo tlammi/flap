@@ -12,23 +12,23 @@
 
 #include <flap/consumer.hpp>
 
-namespace flap::consumer {
+namespace flap::llvm {
 
 enum class State {
     None,
     RetStmt,
 };
 
-class Llvm final : public Consumer {
+class ConsumerImpl final : public Consumer {
  public:
     // Recurse consume(const ast::Module& module_) override {
     // }
     Recurse consume(const ast::Function& func) override {
         auto* ft =
-            llvm::FunctionType::get(llvm::Type::getInt32Ty(m_ctx), false);
-        m_func = llvm::Function::Create(ft, llvm::Function::ExternalLinkage,
-                                        func.name(), &m_mod);
-        auto* bb = llvm::BasicBlock::Create(m_ctx, "entry", m_func);
+            ::llvm::FunctionType::get(::llvm::Type::getInt32Ty(m_ctx), false);
+        m_func = ::llvm::Function::Create(ft, ::llvm::Function::ExternalLinkage,
+                                          func.name(), &m_mod);
+        auto* bb = ::llvm::BasicBlock::Create(m_ctx, "entry", m_func);
         m_builder.SetInsertPoint(bb);
         return Recurse::Yes;
     }
@@ -40,14 +40,13 @@ class Llvm final : public Consumer {
     }
 
     Recurse consume(const ast::IntLiteral& lit) override {
-        auto* val = llvm::ConstantInt::get(
-            m_ctx, llvm::APInt(32, lit.value(), lit.radix()));
+        auto* val = ::llvm::ConstantInt::get(
+            m_ctx, ::llvm::APInt(32, lit.value(), lit.radix()));
         if (m_state == State::RetStmt) {
             m_builder.CreateRet(val);
-            llvm::verifyFunction(*m_func);
+            ::llvm::verifyFunction(*m_func);
 
-            // m_mod.print(llvm::errs(), nullptr);
-            m_mod.print(llvm::outs(), nullptr);
+            m_mod.print(::llvm::outs(), nullptr);
         } else {
             throw std::runtime_error("Unimplemented");
         }
@@ -55,11 +54,15 @@ class Llvm final : public Consumer {
     }
 
  private:
-    llvm::LLVMContext m_ctx{};
-    llvm::Module m_mod{"flap WIP", m_ctx};
-    llvm::IRBuilder<> m_builder{m_ctx};
-    llvm::Function* m_func{};
+    ::llvm::LLVMContext m_ctx{};
+    ::llvm::Module m_mod{"flap WIP", m_ctx};
+    ::llvm::IRBuilder<> m_builder{m_ctx};
+    ::llvm::Function* m_func{};
     State m_state{};
 };
 
-}  // namespace flap::consumer
+std::unique_ptr<Consumer> make_consumer() {
+    return std::make_unique<ConsumerImpl>();
+}
+
+}  // namespace flap::llvm

@@ -7,5 +7,6 @@ cli11_dep = cli11.get_variable('CLI11_dep')
 
 pub_incdir = include_directories('include')
 
+subdir('consumer')
 subdir('lib')
 subdir('bin')

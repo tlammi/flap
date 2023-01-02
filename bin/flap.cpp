@@ -2,7 +2,9 @@
 #include <CLI/App.hpp>
 #include <CLI/Config.hpp>
 #include <CLI/Formatter.hpp>
+#include <flap/debug/consumer.hpp>
 #include <flap/flap.hpp>
+#include <flap/llvm/consumer.hpp>
 #include <iostream>
 #include <string_view>
 
@@ -19,11 +21,15 @@ int main(int argc, char** argv) {
                    R"(Source file to compile or "-" for stdin)")
         ->required();
     CLI11_PARSE(app, argc, argv);
+    std::unique_ptr<flap::Consumer> consumer{};
+    if (backend == "debug")
+        consumer = flap::debug::make_consumer();
+    else if (backend == "llvm")
+        consumer = flap::llvm::make_consumer();
+    else
+        throw std::runtime_error("Invalid consumer");
 
-    auto consumer =
-        backend == "debug" ? flap::debug_consumer() : flap::llvm_consumer();
     auto doc = source == "-" ? flap::parse(std::cin) : flap::parse_file(source);
-
     doc.root->accept(*consumer);
 }
 
