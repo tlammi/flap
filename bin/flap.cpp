@@ -16,11 +16,15 @@ int main(int argc, char** argv) {
     std::filesystem::path source{};
     app.add_option("-b,--backend", backend,
                    R"(Backend to use. "debug" or "llvm")");
+    bool debug = false;
+    app.add_flag("-d,--debug", debug, "Enable debug logs");
 
     app.add_option("source", source,
                    R"(Source file to compile or "-" for stdin)")
         ->required();
     CLI11_PARSE(app, argc, argv);
+
+    if (debug) flap::set_log_stream(&std::cerr);
     std::unique_ptr<flap::Consumer> consumer{};
     if (backend == "debug")
         consumer = flap::debug::make_consumer();

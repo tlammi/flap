@@ -7,6 +7,7 @@
 #include "ast/module_impl.hpp"
 #include "ast/ret_stmt_impl.hpp"
 #include "lex.hpp"
+#include "logs.hpp"
 
 namespace flap {
 namespace {

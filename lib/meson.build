@@ -7,7 +7,7 @@ lib_incdir = include_directories('.')
 subdir('util')
 subdir('ast')
 
-SRCS += files('lex.cpp', 'parse.cpp')
+SRCS += files('lex.cpp', 'parse.cpp', 'logs.cpp')
 
 libflap = static_library('flap', SRCS,
     include_directories: [lib_incdir, pub_incdir],
