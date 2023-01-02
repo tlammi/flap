@@ -60,31 +60,56 @@ class Parser {
         lexeme = m_lexer.next();
         if (lexeme.token != Define) do_throw();
         lexeme = m_lexer.next();
-        if (lexeme.token == IntLiteral) {
-            auto func = std::make_unique<ast::FunctionImpl>(first_lexeme.value,
-                                                            return_type);
-            auto ret = std::make_unique<ast::RetStmtImpl>();
-            ret->add(std::make_unique<ast::IntLiteral>(lexeme.value));
-            func->add(std::move(ret));
+        auto func = std::make_unique<ast::FunctionImpl>(first_lexeme.value,
+                                                        return_type);
+        if (lexeme.token != Brace) {
+            parse_short_function_body(*func);
             scope.add(std::move(func));
             return;
         }
         if (lexeme.token == Brace) {
-            lexeme = m_lexer.next();
-            if (lexeme.token != Return) do_throw();
-            lexeme = m_lexer.next();
-            if (lexeme.token != IntLiteral) do_throw();
-            auto func = std::make_unique<ast::FunctionImpl>(first_lexeme.value,
-                                                            return_type);
-            auto ret = std::make_unique<ast::RetStmtImpl>();
-            ret->add(std::make_unique<ast::IntLiteral>(lexeme.value));
-            func->add(std::move(ret));
+            parse_long_function_body(*func);
             scope.add(std::move(func));
-            lexeme = m_lexer.next();
-            if (lexeme.token != BraceClose) do_throw();
             return;
         }
         do_throw();
+    }
+
+    void parse_short_function_body(ast::StmtScope& scope) {
+        auto ret_stmt = std::make_unique<ast::RetStmtImpl>();
+        parse_expr(*ret_stmt);
+        scope.add(std::move(ret_stmt));
+    }
+
+    void parse_long_function_body(ast::StmtScope& scope) {
+        using enum lex::Token;
+        m_lexer.next();  // eat {
+        while (m_lexer.current().token != BraceClose) {
+            parse_stmt(scope);
+        }
+        m_lexer.next();  // eat }
+    }
+
+    void parse_stmt(ast::StmtScope& scope) {
+        using enum lex::Token;
+        auto lexeme = m_lexer.current();
+        if (lexeme.token == Return) {
+            m_lexer.next();
+            auto stmt = std::make_unique<ast::RetStmtImpl>();
+            parse_expr(*stmt);
+            scope.add(std::move(stmt));
+            return;
+        }
+        do_throw();
+    }
+
+    void parse_expr(ast::ExprScope& scope) {
+        auto lexeme = m_lexer.current();
+        using enum lex::Token;
+        if (lexeme.token != IntLiteral) do_throw();
+        auto lit = std::make_unique<ast::IntLiteral>(lexeme.value);
+        scope.add(std::move(lit));
+        m_lexer.next();  // eat the literal
     }
 
     [[noreturn]] static void do_throw() {
