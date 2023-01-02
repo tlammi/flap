@@ -27,7 +27,6 @@ std::optional<Lexeme> lex_no_value(std::string_view& str,
 }
 
 std::optional<Lexeme> lex_identifier(std::string_view& str) {
-    std::cerr << str << '\n';
     if (str.empty()) return std::nullopt;
     const auto f = str.front();
     if ((f < 'A' || (f > 'Z' && f < 'a') || f > 'z') && f != '_')
@@ -114,6 +113,8 @@ struct Matcher {
 
 Lexeme Lexer::next() {
     m_current = next_impl();
+    std::cerr << "lexed: " << (int)m_current.token << ": " << m_current.value
+              << '\n';
     return m_current;
 }
 
@@ -138,7 +139,6 @@ Lexeme Lexer::next_impl() {
     if (auto lex = lex_comment_multi_line(m_data)) return *lex;
     if (auto lex = lex_identifier(m_data)) return *lex;
     if (auto lex = lex_int_literal(m_data)) return *lex;
-    std::cerr << m_data << '\n';
     throw std::runtime_error("asdfasf");
 }
 

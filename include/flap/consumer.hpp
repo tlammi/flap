@@ -2,6 +2,7 @@
 
 #include <flap/ast/ast.hpp>
 #include <flap/ast/function.hpp>
+#include <flap/ast/function_call.hpp>
 #include <flap/ast/int_literal.hpp>
 #include <flap/ast/module.hpp>
 #include <flap/ast/ret_stmt.hpp>
@@ -26,6 +27,9 @@ class Consumer {
 
     virtual Recurse consume(const ast::Module& module_) { return Recurse::Yes; }
     virtual Recurse consume(const ast::Function& func) { return Recurse::Yes; }
+    virtual Recurse consume(const ast::FunctionCall& func) {
+        return Recurse::Yes;
+    }
     virtual Recurse consume(const ast::RetStmt& ret) { return Recurse::Yes; }
     virtual Recurse consume(const ast::IntLiteral& lit) { return Recurse::Yes; }
 };

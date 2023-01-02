@@ -2,6 +2,7 @@
 #include <flap/parse.hpp>
 #include <fstream>
 
+#include "ast/function_call_impl.hpp"
 #include "ast/function_impl.hpp"
 #include "ast/module_impl.hpp"
 #include "ast/ret_stmt_impl.hpp"
@@ -16,6 +17,7 @@ class Parser {
 
     std::unique_ptr<flap::ast::Ast> parse() {
         auto mod = std::make_unique<ast::ModuleImpl>();
+        m_lexer.next();
         while (m_lexer.current().token != lex::Token::Eof) {
             parse_primary(*mod);
         }
@@ -27,14 +29,19 @@ class Parser {
      * Start parsing from "root" of the document
      * */
     void parse_primary(ast::FunctionScope& scope) {
-        auto lexeme = m_lexer.next();
+        // auto lexeme = m_lexer.next();
         using enum lex::Token;
-        switch (lexeme.token) {
+        switch (m_lexer.current().token) {
             case Identifier:
                 parse_identifier(scope);
+                break;
             case CommentOneLine:
+                m_lexer.next();
                 break;
             case CommentMultiLine:
+                m_lexer.next();
+                break;
+            case Eol:
                 break;
             case Eof:
                 return;
@@ -106,14 +113,29 @@ class Parser {
     void parse_expr(ast::ExprScope& scope) {
         auto lexeme = m_lexer.current();
         using enum lex::Token;
-        if (lexeme.token != IntLiteral) do_throw();
-        auto lit = std::make_unique<ast::IntLiteral>(lexeme.value);
-        scope.add(std::move(lit));
-        m_lexer.next();  // eat the literal
+        if (lexeme.token == IntLiteral) {
+            auto lit = std::make_unique<ast::IntLiteral>(lexeme.value);
+            scope.add(std::move(lit));
+            m_lexer.next();  // eat the literal
+            return;
+        }
+        if (lexeme.token == Identifier) {
+            auto next = m_lexer.next();
+            if (next.token != Paren) do_throw();
+            next = m_lexer.next();
+            if (next.token != ParenClose) do_throw();
+            scope.add(std::make_unique<ast::FunctionCallImpl>(lexeme.value));
+            m_lexer.next();
+            return;
+        }
+        do_throw();
     }
 
-    [[noreturn]] static void do_throw() {
-        throw std::runtime_error("Unexpected token");
+    [[noreturn]] void do_throw() {
+        std::stringstream ss;
+        ss << "Unexpected token: " << (int)m_lexer.current().token << ": "
+           << m_lexer.current().value;
+        throw std::runtime_error(ss.str());
     }
 
     lex::Lexer m_lexer;

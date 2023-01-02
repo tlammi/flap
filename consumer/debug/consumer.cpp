@@ -16,6 +16,10 @@ class ConsumerImpl final : public Consumer {
         std::cerr << func.name() << ": () -> " << func.return_type() << '\n';
         return R::Yes;
     }
+    Recurse consume(const ast::FunctionCall& call) override {
+        std::cerr << "function call: " << call.name() << '\n';
+        return R::Yes;
+    }
     Recurse consume(const ast::IntLiteral& lit) override {
         std::cerr << "integer literal: " << lit.value() << '\n';
         return R::Yes;
@@ -23,7 +27,6 @@ class ConsumerImpl final : public Consumer {
 };
 
 std::unique_ptr<Consumer> make_consumer() {
-    std::cerr << "making consumer\n";
     return std::make_unique<ConsumerImpl>();
 }
 }  // namespace flap::debug
