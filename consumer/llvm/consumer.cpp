@@ -39,13 +39,27 @@ class ConsumerImpl final : public Consumer {
         return Recurse::No;
     }
 
+    Recurse consume(const ast::FunctionCall& call) override {
+        auto* tgt = m_mod.getFunction(call.name());
+        if (!tgt) throw std::runtime_error("Unknown function name");
+        if (tgt->arg_size())
+            throw std::runtime_error("Parameters not supported yet");
+        auto* val = m_builder.CreateCall(tgt);
+        if (m_state == State::RetStmt) {
+            m_builder.CreateRet(val);
+            ::llvm::verifyFunction(*m_func);
+            m_mod.print(::llvm::outs(), nullptr);
+            return Recurse::Yes;
+        }
+        throw std::runtime_error("Unimplemented");
+    }
+
     Recurse consume(const ast::IntLiteral& lit) override {
         auto* val = ::llvm::ConstantInt::get(
             m_ctx, ::llvm::APInt(32, lit.value(), lit.radix()));
         if (m_state == State::RetStmt) {
             m_builder.CreateRet(val);
             ::llvm::verifyFunction(*m_func);
-
             m_mod.print(::llvm::outs(), nullptr);
         } else {
             throw std::runtime_error("Unimplemented");
