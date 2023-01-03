@@ -5,3 +5,4 @@ executable('flap', 'flap.cpp',
     include_directories: pub_incdir,
     dependencies: deps)
 
+fs.copyfile('flapi', 'flapi')
