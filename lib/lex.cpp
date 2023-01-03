@@ -6,6 +6,8 @@
 
 namespace flap::lex {
 
+using namespace std::literals::string_view_literals;
+
 constexpr bool is_hex(char c) {
     const auto no = c >= '0' && c <= '9';
     const auto big = c >= 'A' && c <= 'Z';
@@ -15,6 +17,10 @@ constexpr bool is_hex(char c) {
 
 constexpr bool is_bin(char c) { return c == '1' || c == '0'; }
 constexpr bool is_dec(char c) { return c >= '0' && c <= '9'; }
+
+constexpr bool is_oper(char c) {
+    return "+-*/<>^&%?!"sv.find(c) != std::string_view::npos;
+}
 
 template <Token T>
 std::optional<Lexeme> lex_no_value(std::string_view& str,
@@ -65,6 +71,17 @@ std::optional<Lexeme> lex_int_literal(std::string_view& str) {
     return Lexeme{Token::IntLiteral, res};
 }
 
+std::optional<Lexeme> lex_operator(std::string_view& str) {
+    size_t idx = 0;
+    while (idx < str.size() && is_oper(str.at(idx))) {
+        ++idx;
+    }
+    if (!idx) return std::nullopt;
+    auto res = str.substr(0, idx);
+    str.remove_prefix(idx);
+    return Lexeme{Token::Operator, res};
+}
+
 std::optional<Lexeme> lex_comment_one_line(std::string_view& str) {
     if (str.starts_with("//")) {
         size_t idx = 2;
@@ -108,9 +125,6 @@ struct Matcher {
     }
 };
 
-#define LEX_NO_VALUE(prefix, token) \
-    if (auto lex = lex_no_value<token>(m_data, prefix)) return *lex
-
 Lexeme Lexer::next() {
     m_current = next_impl();
     std::cerr << "lexed: " << (int)m_current.token << ": " << m_current.value
@@ -119,6 +133,9 @@ Lexeme Lexer::next() {
 }
 
 Lexeme Lexer::current() const noexcept { return m_current; }
+
+#define LEX_NO_VALUE(prefix, token) \
+    if (auto lex = lex_no_value<token>(m_data, prefix)) return *lex
 
 Lexeme Lexer::next_impl() {
     skip(m_data);
@@ -139,6 +156,7 @@ Lexeme Lexer::next_impl() {
     if (auto lex = lex_comment_multi_line(m_data)) return *lex;
     if (auto lex = lex_identifier(m_data)) return *lex;
     if (auto lex = lex_int_literal(m_data)) return *lex;
+    if (auto lex = lex_operator(m_data)) return *lex;
     throw std::runtime_error("asdfasf");
 }
 

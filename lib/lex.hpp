@@ -22,6 +22,7 @@ enum class Token {
     Eol,               // End of line
     Eof,               // End of file
     Identifier,        // Identifiers like main, myvar, ...
+    Operator,          // Generic operator, e.g. +, ++, *, **, ***, / or -
 };
 
 struct Lexeme {

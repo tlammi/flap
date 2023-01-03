@@ -67,3 +67,15 @@ main: () -> i32 := 4
                                      ParenClose, Arrow, Identifier, Define,
                                      IntLiteral, Eof));
 }
+
+TEST(Operator, Sum) {
+    static constexpr std::string_view data = "1 + 2";
+    lex::Lexer l{data};
+    auto lexemes = l.lex_all();
+    auto tokens = to_tokens(lexemes);
+    using enum lex::Token;
+    ASSERT_THAT(tokens,
+                testing::ElementsAre(IntLiteral, Operator, IntLiteral, Eof));
+    auto strs = to_strs(lexemes);
+    ASSERT_EQ(strs.at(1), "+");
+}
