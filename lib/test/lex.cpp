@@ -79,3 +79,15 @@ TEST(Operator, Sum) {
     auto strs = to_strs(lexemes);
     ASSERT_EQ(strs.at(1), "+");
 }
+
+TEST(Operator, PrefixInc) {
+    static constexpr std::string_view data = "++i";
+    lex::Lexer l{data};
+    auto oper = l.next();
+    auto identifier = l.next();
+    auto end = l.next();
+    ASSERT_EQ(oper.token, lex::Token::Operator);
+    ASSERT_EQ(identifier.token, lex::Token::Identifier);
+    ASSERT_EQ(end.token, lex::Token::Eof);
+    ASSERT_EQ(oper.value, "++");
+}
