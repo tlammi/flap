@@ -56,6 +56,11 @@ class ConsumerImpl final : public Consumer {
             m_stack.push(val);
             return Recurse::No;
         }
+        if (op.oper() == "-") {
+            auto* val = m_builder.CreateSub(lhs, rhs);
+            m_stack.push(val);
+            return Recurse::No;
+        }
         throw std::runtime_error("Unimplemented");
     }
 
