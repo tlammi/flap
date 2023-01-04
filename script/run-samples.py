@@ -59,7 +59,7 @@ def main():
         ret = os.system(" ".join([exe] + [t.path]))
         ret >>= 8
         if ret != t.expected_return:
-            print(f"Unexpected return value: {ret} vs {t.expected_return}")
+            raise ValueError(f"Unexpected return value: {ret} vs {t.expected_return}")
         print(f"returned {ret}")
 
 if __name__ == "__main__":
