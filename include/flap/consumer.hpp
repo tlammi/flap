@@ -1,6 +1,7 @@
 #pragma once
 
 #include <flap/ast/ast.hpp>
+#include <flap/ast/binary_operator.hpp>
 #include <flap/ast/function.hpp>
 #include <flap/ast/function_call.hpp>
 #include <flap/ast/int_literal.hpp>
@@ -32,6 +33,9 @@ class Consumer {
     }
     virtual Recurse consume(const ast::RetStmt& ret) { return Recurse::Yes; }
     virtual Recurse consume(const ast::IntLiteral& lit) { return Recurse::Yes; }
+    virtual Recurse consume(const ast::BinaryOperator& oper) {
+        return Recurse::Yes;
+    }
 };
 
 }  // namespace flap

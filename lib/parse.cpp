@@ -2,6 +2,7 @@
 #include <flap/parse.hpp>
 #include <fstream>
 
+#include "ast/binary_operator_impl.hpp"
 #include "ast/function_call_impl.hpp"
 #include "ast/function_impl.hpp"
 #include "ast/module_impl.hpp"
@@ -85,7 +86,7 @@ class Parser {
 
     void parse_short_function_body(ast::StmtScope& scope) {
         auto ret_stmt = std::make_unique<ast::RetStmtImpl>();
-        parse_expr(*ret_stmt);
+        ret_stmt->add(parse_expr());
         scope.add(std::move(ret_stmt));
     }
 
@@ -104,30 +105,36 @@ class Parser {
         if (lexeme.token == Return) {
             m_lexer.next();
             auto stmt = std::make_unique<ast::RetStmtImpl>();
-            parse_expr(*stmt);
+            stmt->add(parse_expr());
             scope.add(std::move(stmt));
             return;
         }
         do_throw();
     }
 
-    void parse_expr(ast::ExprScope& scope) {
+    std::unique_ptr<ast::Expr> parse_expr() {
+        auto lhs = parse_expr_lhs();
+        auto lexeme = m_lexer.current();
+        if (lexeme.token != lex::Token::Operator) return lhs;
+        m_lexer.next();
+        return std::make_unique<ast::BinaryOperatorImpl>(
+            lexeme.value, std::move(lhs), parse_expr());
+    }
+    std::unique_ptr<ast::Expr> parse_expr_lhs() {
         auto lexeme = m_lexer.current();
         using enum lex::Token;
         if (lexeme.token == IntLiteral) {
             auto lit = std::make_unique<ast::IntLiteral>(lexeme.value);
-            scope.add(std::move(lit));
             m_lexer.next();  // eat the literal
-            return;
+            return lit;
         }
         if (lexeme.token == Identifier) {
             auto next = m_lexer.next();
             if (next.token != Paren) do_throw();
             next = m_lexer.next();
             if (next.token != ParenClose) do_throw();
-            scope.add(std::make_unique<ast::FunctionCallImpl>(lexeme.value));
             m_lexer.next();
-            return;
+            return std::make_unique<ast::FunctionCallImpl>(lexeme.value);
         }
         do_throw();
     }

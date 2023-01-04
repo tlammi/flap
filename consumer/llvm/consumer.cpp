@@ -11,18 +11,12 @@
 #include <llvm/IR/Verifier.h>
 
 #include <flap/llvm/consumer.hpp>
+#include <stack>
 
 namespace flap::llvm {
 
-enum class State {
-    None,
-    RetStmt,
-};
-
 class ConsumerImpl final : public Consumer {
  public:
-    // Recurse consume(const ast::Module& module_) override {
-    // }
     Recurse consume(const ast::Function& func) override {
         auto* ft =
             ::llvm::FunctionType::get(::llvm::Type::getInt32Ty(m_ctx), false);
@@ -34,8 +28,9 @@ class ConsumerImpl final : public Consumer {
     }
 
     Recurse consume(const ast::RetStmt& stmt) override {
-        m_state = State::RetStmt;
         stmt.expr().accept(*this);
+        m_builder.CreateRet(m_stack.top());
+        m_stack.pop();
         return Recurse::No;
     }
 
@@ -45,10 +40,21 @@ class ConsumerImpl final : public Consumer {
         if (tgt->arg_size())
             throw std::runtime_error("Parameters not supported yet");
         auto* val = m_builder.CreateCall(tgt);
-        if (m_state == State::RetStmt) {
-            m_builder.CreateRet(val);
-            ::llvm::verifyFunction(*m_func);
-            return Recurse::Yes;
+        m_stack.push(val);
+        return Recurse::No;
+    }
+
+    Recurse consume(const ast::BinaryOperator& op) override {
+        op.lhs().accept(*this);
+        auto lhs = m_stack.top();
+        m_stack.pop();
+        op.rhs().accept(*this);
+        auto rhs = m_stack.top();
+        m_stack.pop();
+        if (op.oper() == "+") {
+            auto* val = m_builder.CreateAdd(lhs, rhs);
+            m_stack.push(val);
+            return Recurse::No;
         }
         throw std::runtime_error("Unimplemented");
     }
@@ -56,12 +62,7 @@ class ConsumerImpl final : public Consumer {
     Recurse consume(const ast::IntLiteral& lit) override {
         auto* val = ::llvm::ConstantInt::get(
             m_ctx, ::llvm::APInt(32, lit.value(), lit.radix()));
-        if (m_state == State::RetStmt) {
-            m_builder.CreateRet(val);
-            ::llvm::verifyFunction(*m_func);
-        } else {
-            throw std::runtime_error("Unimplemented");
-        }
+        m_stack.push(val);
         return Recurse::Yes;
     }
 
@@ -77,7 +78,7 @@ class ConsumerImpl final : public Consumer {
     ::llvm::Module m_mod{"flap WIP", m_ctx};
     ::llvm::IRBuilder<> m_builder{m_ctx};
     ::llvm::Function* m_func{};
-    State m_state{};
+    std::stack<::llvm::Value*> m_stack{};
 };
 
 std::unique_ptr<Consumer> make_consumer() {

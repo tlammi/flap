@@ -91,3 +91,17 @@ TEST(Operator, PrefixInc) {
     ASSERT_EQ(end.token, lex::Token::Eof);
     ASSERT_EQ(oper.value, "++");
 }
+
+TEST(Operator, SuffixDec) {
+    static constexpr std::string_view data = "i--";
+
+    lex::Lexer l{data};
+    auto identifier = l.next();
+    auto oper = l.next();
+    auto end = l.next();
+    ASSERT_EQ(oper.token, lex::Token::Operator);
+    ASSERT_EQ(identifier.token, lex::Token::Identifier);
+    ASSERT_EQ(end.token, lex::Token::Eof);
+    ASSERT_EQ(oper.value, "--");
+}
+

@@ -25,6 +25,13 @@ class FunctionImpl final : public ::flap::ast::Function, public StmtScope {
     void add(std::unique_ptr<Stmt>&& s) override {
         m_stmts.push_back(std::move(s));
     }
+    virtual std::vector<const ast::Ast*> statements() const override {
+        std::vector<const Ast*> out{};
+        for (const auto& stmt : m_stmts) {
+            out.push_back(stmt.get());
+        }
+        return out;
+    }
 
  private:
     std::string_view m_name;
