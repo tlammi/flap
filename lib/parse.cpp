@@ -7,6 +7,7 @@
 #include "ast/function_impl.hpp"
 #include "ast/module_impl.hpp"
 #include "ast/ret_stmt_impl.hpp"
+#include "ast/var_def_stmt_impl.hpp"
 #include "lex.hpp"
 #include "logs.hpp"
 
@@ -107,6 +108,21 @@ class Parser {
             auto stmt = std::make_unique<ast::RetStmtImpl>();
             stmt->add(parse_expr());
             scope.add(std::move(stmt));
+            return;
+        }
+        if (lexeme.token == Identifier) {
+            const auto name = lexeme.value;
+            lexeme = m_lexer.next();
+            if (lexeme.token != Colon) do_throw();
+            lexeme = m_lexer.next();
+            if (lexeme.token != Identifier) do_throw();
+            const auto type = lexeme.value;
+            lexeme = m_lexer.next();
+            if (lexeme.token != Define) do_throw();
+            lexeme = m_lexer.next();
+            auto res =
+                std::make_unique<ast::VarDefStmtImpl>(name, type, parse_expr());
+            scope.add(std::move(res));
             return;
         }
         do_throw();

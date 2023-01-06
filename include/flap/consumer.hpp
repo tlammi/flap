@@ -7,6 +7,7 @@
 #include <flap/ast/int_literal.hpp>
 #include <flap/ast/module.hpp>
 #include <flap/ast/ret_stmt.hpp>
+#include <flap/ast/var_def_stmt.hpp>
 #include <memory>
 
 namespace flap {
@@ -32,6 +33,9 @@ class Consumer {
         return Recurse::Yes;
     }
     virtual Recurse consume(const ast::RetStmt& ret) { return Recurse::Yes; }
+    virtual Recurse consume(const ast::VarDefStmt& stmt) {
+        return Recurse::Yes;
+    }
     virtual Recurse consume(const ast::IntLiteral& lit) { return Recurse::Yes; }
     virtual Recurse consume(const ast::BinaryOperator& oper) {
         return Recurse::Yes;
