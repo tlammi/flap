@@ -116,10 +116,9 @@ class Parser {
         auto lhs = parse_expr_lhs();
         auto lexeme = m_lexer.current();
         if (lexeme.token != lex::Token::Operator) return lhs;
-        m_lexer.next();
-        return std::make_unique<ast::BinaryOperatorImpl>(
-            lexeme.value, std::move(lhs), parse_expr());
+        return parse_expr_binop(std::move(lhs));
     }
+
     std::unique_ptr<ast::Expr> parse_expr_lhs() {
         auto lexeme = m_lexer.current();
         using enum lex::Token;
@@ -137,6 +136,21 @@ class Parser {
             return std::make_unique<ast::FunctionCallImpl>(lexeme.value);
         }
         do_throw();
+    }
+
+    std::unique_ptr<ast::Expr> parse_expr_binop(
+        std::unique_ptr<ast::Expr> lhs) {
+        auto lexeme = m_lexer.current();
+        m_lexer.next();
+        auto rhs = parse_expr_lhs();
+        auto next = m_lexer.current();
+        if (next.token == lex::Token::Operator) {
+            lhs = std::make_unique<ast::BinaryOperatorImpl>(
+                lexeme.value, std::move(lhs), std::move(rhs));
+            return parse_expr_binop(std::move(lhs));
+        }
+        return std::make_unique<ast::BinaryOperatorImpl>(
+            lexeme.value, std::move(lhs), std::move(rhs));
     }
 
     [[noreturn]] void do_throw() {
