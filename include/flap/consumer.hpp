@@ -4,6 +4,7 @@
 #include <flap/ast/binary_operator.hpp>
 #include <flap/ast/function.hpp>
 #include <flap/ast/function_call.hpp>
+#include <flap/ast/identifier_expr.hpp>
 #include <flap/ast/int_literal.hpp>
 #include <flap/ast/module.hpp>
 #include <flap/ast/ret_stmt.hpp>
@@ -38,6 +39,9 @@ class Consumer {
     }
     virtual Recurse consume(const ast::IntLiteral& lit) { return Recurse::Yes; }
     virtual Recurse consume(const ast::BinaryOperator& oper) {
+        return Recurse::Yes;
+    }
+    virtual Recurse consume(const ast::IdentifierExpr& expr) {
         return Recurse::Yes;
     }
 };

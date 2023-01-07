@@ -5,6 +5,7 @@
 #include "ast/binary_operator_impl.hpp"
 #include "ast/function_call_impl.hpp"
 #include "ast/function_impl.hpp"
+#include "ast/identifier_expr_impl.hpp"
 #include "ast/module_impl.hpp"
 #include "ast/ret_stmt_impl.hpp"
 #include "ast/var_def_stmt_impl.hpp"
@@ -145,7 +146,10 @@ class Parser {
         }
         if (lexeme.token == Identifier) {
             auto next = m_lexer.next();
-            if (next.token != Paren) do_throw();
+            // if (next.token != Paren) do_throw();
+            if (next.token != Paren) {
+                return std::make_unique<ast::IdentifierExprImpl>(lexeme.value);
+            }
             next = m_lexer.next();
             if (next.token != ParenClose) do_throw();
             m_lexer.next();

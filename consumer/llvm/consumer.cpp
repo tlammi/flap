@@ -11,6 +11,7 @@
 #include <llvm/IR/Verifier.h>
 
 #include <flap/llvm/consumer.hpp>
+#include <map>
 #include <stack>
 
 namespace flap::llvm {
@@ -30,6 +31,13 @@ class ConsumerImpl final : public Consumer {
     Recurse consume(const ast::RetStmt& stmt) override {
         stmt.expr().accept(*this);
         m_builder.CreateRet(m_stack.top());
+        m_stack.pop();
+        return Recurse::No;
+    }
+
+    Recurse consume(const ast::VarDefStmt& stmt) override {
+        stmt.expr().accept(*this);
+        m_vars[stmt.name()] = m_stack.top();
         m_stack.pop();
         return Recurse::No;
     }
@@ -76,6 +84,11 @@ class ConsumerImpl final : public Consumer {
         return Recurse::Yes;
     }
 
+    Recurse consume(const ast::IdentifierExpr& expr) override {
+        m_stack.push(m_vars.at(expr.name()));
+        return Recurse::No;
+    }
+
     std::string llvm_ir() override {
         std::string out{};
         ::llvm::raw_string_ostream str{out};
@@ -89,6 +102,7 @@ class ConsumerImpl final : public Consumer {
     ::llvm::IRBuilder<> m_builder{m_ctx};
     ::llvm::Function* m_func{};
     std::stack<::llvm::Value*> m_stack{};
+    std::map<std::string_view, ::llvm::Value*> m_vars{};
 };
 
 std::unique_ptr<Consumer> make_consumer() {

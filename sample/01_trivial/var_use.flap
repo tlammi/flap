@@ -1,7 +1,7 @@
-// return=0
+// return=100
 
 main: () -> i32 := {
     var: i32 := 100
-    return 0
+    return var
 }
 
