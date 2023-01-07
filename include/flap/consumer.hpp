@@ -33,6 +33,9 @@ class Consumer {
     virtual Recurse consume(const ast::FunctionCall& func) {
         return Recurse::Yes;
     }
+    virtual Recurse consume(const ast::FunctionParam& param) {
+        return Recurse::Yes;
+    }
     virtual Recurse consume(const ast::RetStmt& ret) { return Recurse::Yes; }
     virtual Recurse consume(const ast::VarDefStmt& stmt) {
         return Recurse::Yes;

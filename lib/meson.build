@@ -1,6 +1,6 @@
 
 SRCS = []
-DEPS = []
+DEPS = [magic_enum_dep]
 
 lib_incdir = include_directories('.')
 

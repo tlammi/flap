@@ -1,5 +1,6 @@
 #pragma once
 
+#include <ostream>
 #include <string_view>
 #include <vector>
 
@@ -13,6 +14,7 @@ enum class Token {
     BraceClose,        // }
     Bracket,           // [
     BracketClose,      // ]
+    Comma,             // ,
     Define,            // :=
     Arrow,             // ->
     IntLiteral,        // 0 or 49 or 101 etc.
@@ -25,10 +27,14 @@ enum class Token {
     Operator,          // Generic operator, e.g. +, ++, *, **, ***, / or -
 };
 
+std::ostream& operator<<(std::ostream& os, Token tok);
+
 struct Lexeme {
     Token token;
     std::string_view value;
 };
+
+std::ostream& operator<<(std::ostream& os, Lexeme lexeme);
 
 class Lexer {
  public:

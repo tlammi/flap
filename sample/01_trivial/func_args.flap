@@ -1,0 +1,8 @@
+// return=8
+
+bar: (i: i32) -> i32 := i + 4
+
+foo: (i: i32, j: i32) -> i32 := bar(i+j+1)
+
+main: () -> i32 := foo(1, 2)
+

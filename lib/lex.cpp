@@ -1,12 +1,24 @@
 #include "lex.hpp"
 
 #include <iostream>
+#include <magic_enum.hpp>
 #include <optional>
 #include <stdexcept>
+
+#include "logs.hpp"
 
 namespace flap::lex {
 
 using namespace std::literals::string_view_literals;
+
+std::ostream& operator<<(std::ostream& os, Token tok) {
+    os << '"' << magic_enum::enum_name(tok) << '"';
+    return os;
+}
+std::ostream& operator<<(std::ostream& os, Lexeme lexeme) {
+    os << "(" << lexeme.token << ": \"" << lexeme.value << "\")";
+    return os;
+}
 
 constexpr bool is_hex(char c) {
     const auto no = c >= '0' && c <= '9';
@@ -127,8 +139,7 @@ struct Matcher {
 
 Lexeme Lexer::next() {
     m_current = next_impl();
-    std::cerr << "lexed: " << (int)m_current.token << ": " << m_current.value
-              << '\n';
+    DEBUG << "lexed: " << m_current;
     return m_current;
 }
 
@@ -149,6 +160,7 @@ Lexeme Lexer::next_impl() {
     LEX_NO_VALUE("]", BracketClose);
     LEX_NO_VALUE("{", Brace);
     LEX_NO_VALUE("}", BraceClose);
+    LEX_NO_VALUE(",", Comma);
     LEX_NO_VALUE("->", Arrow);
     LEX_NO_VALUE("\n", Eol);
     LEX_NO_VALUE("return", Return);

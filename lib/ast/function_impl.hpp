@@ -10,8 +10,9 @@ namespace flap::ast {
 
 class FunctionImpl final : public ::flap::ast::Function, public StmtScope {
  public:
-    FunctionImpl(std::string_view name, std::string_view return_type)
-        : m_name{name}, m_ret{return_type} {}
+    FunctionImpl(std::string_view name, std::string_view return_type,
+                 std::vector<std::unique_ptr<ast::FunctionParam>> params)
+        : m_name{name}, m_ret{return_type}, m_params{std::move(params)} {}
 
     void accept(Consumer& consumer) const {
         auto recurse = consumer.consume(*this);
@@ -21,6 +22,15 @@ class FunctionImpl final : public ::flap::ast::Function, public StmtScope {
 
     std::string_view return_type() const noexcept override { return m_ret; }
     std::string_view name() const noexcept override { return m_name; }
+
+    std::vector<const ast::FunctionParam*> params() const override {
+        std::vector<const ast::FunctionParam*> out{};
+        out.reserve(m_params.size());
+        for (const auto& p : m_params) {
+            out.push_back(p.get());
+        }
+        return out;
+    }
 
     void add(std::unique_ptr<Stmt>&& s) override {
         m_stmts.push_back(std::move(s));
@@ -36,6 +46,7 @@ class FunctionImpl final : public ::flap::ast::Function, public StmtScope {
  private:
     std::string_view m_name;
     std::string_view m_ret;
+    std::vector<std::unique_ptr<ast::FunctionParam>> m_params{};
     std::vector<std::unique_ptr<Stmt>> m_stmts{};
 };
 }  // namespace flap::ast

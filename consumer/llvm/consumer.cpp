@@ -19,10 +19,25 @@ namespace flap::llvm {
 class ConsumerImpl final : public Consumer {
  public:
     Recurse consume(const ast::Function& func) override {
-        auto* ft =
-            ::llvm::FunctionType::get(::llvm::Type::getInt32Ty(m_ctx), false);
+        ::llvm::FunctionType* ft{nullptr};
+        auto params = func.params();
+        if (params.empty()) {
+            ft = ::llvm::FunctionType::get(::llvm::Type::getInt32Ty(m_ctx),
+                                           false);
+        } else {
+            std::vector<::llvm::Type*> llvm_params(
+                params.size(), ::llvm::Type::getInt32Ty(m_ctx));
+            ft = ::llvm::FunctionType::get(::llvm::Type::getInt32Ty(m_ctx),
+                                           llvm_params, false);
+        }
         m_func = ::llvm::Function::Create(ft, ::llvm::Function::ExternalLinkage,
                                           func.name(), &m_mod);
+        size_t idx = 0;
+        for (auto& param : m_func->args()) {
+            param.setName(params.at(idx)->name());
+            m_vars[params.at(idx)->name()] = &param;
+            ++idx;
+        }
         auto* bb = ::llvm::BasicBlock::Create(m_ctx, "entry", m_func);
         m_builder.SetInsertPoint(bb);
         return Recurse::Yes;
@@ -45,9 +60,18 @@ class ConsumerImpl final : public Consumer {
     Recurse consume(const ast::FunctionCall& call) override {
         auto* tgt = m_mod.getFunction(call.name());
         if (!tgt) throw std::runtime_error("Unknown function name");
-        if (tgt->arg_size())
-            throw std::runtime_error("Parameters not supported yet");
-        auto* val = m_builder.CreateCall(tgt);
+        auto args = call.args();
+        if (tgt->arg_size() != args.size())
+            throw std::runtime_error("Wrong number of arguments");
+
+        std::vector<::llvm::Value*> llvm_args{};
+        llvm_args.reserve(args.size());
+        for (const auto& arg : args) {
+            arg->accept(*this);
+            llvm_args.push_back(m_stack.top());
+            m_stack.pop();
+        }
+        auto* val = m_builder.CreateCall(tgt, llvm_args);
         m_stack.push(val);
         return Recurse::No;
     }
