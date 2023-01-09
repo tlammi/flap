@@ -2,6 +2,7 @@
 
 #include <flap/ast/ast.hpp>
 #include <flap/ast/function_param.hpp>
+#include <flap/ast/pattern.hpp>
 #include <string_view>
 #include <vector>
 
@@ -15,5 +16,7 @@ class Function : public Ast {
     virtual std::vector<const ast::FunctionParam*> params() const = 0;
     // TODO Ast -> Stmt
     virtual std::vector<const ast::Ast*> statements() const = 0;
+
+    virtual std::vector<const Pattern*> patterns() const = 0;
 };
 }  // namespace flap::ast

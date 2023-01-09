@@ -4,11 +4,9 @@
 #include <flap/consumer.hpp>
 #include <vector>
 
-#include "ast/scope.hpp"
-
 namespace flap::ast {
 
-class FunctionImpl final : public ::flap::ast::Function, public StmtScope {
+class FunctionImpl final : public ::flap::ast::Function {
  public:
     FunctionImpl(std::string_view name, std::string_view return_type,
                  std::vector<std::unique_ptr<ast::FunctionParam>> params)
@@ -32,10 +30,8 @@ class FunctionImpl final : public ::flap::ast::Function, public StmtScope {
         return out;
     }
 
-    void add(std::unique_ptr<Stmt>&& s) override {
-        m_stmts.push_back(std::move(s));
-    }
-    virtual std::vector<const ast::Ast*> statements() const override {
+    void add(std::unique_ptr<Stmt>&& s) { m_stmts.push_back(std::move(s)); }
+    std::vector<const ast::Ast*> statements() const override {
         std::vector<const Ast*> out{};
         for (const auto& stmt : m_stmts) {
             out.push_back(stmt.get());
@@ -43,10 +39,24 @@ class FunctionImpl final : public ::flap::ast::Function, public StmtScope {
         return out;
     }
 
+    std::vector<const Pattern*> patterns() const override {
+        std::vector<const Pattern*> out{};
+        out.reserve(m_pats.size());
+        for (const auto& p : m_pats) {
+            out.push_back(p.get());
+        }
+        return out;
+    }
+
+    void add_pattern(std::unique_ptr<Pattern> pattern) {
+        m_pats.push_back(std::move(pattern));
+    }
+
  private:
     std::string_view m_name;
     std::string_view m_ret;
     std::vector<std::unique_ptr<ast::FunctionParam>> m_params{};
     std::vector<std::unique_ptr<Stmt>> m_stmts{};
+    std::vector<std::unique_ptr<Pattern>> m_pats{};
 };
 }  // namespace flap::ast

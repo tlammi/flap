@@ -3,8 +3,6 @@
 #include <flap/ast/binary_operator.hpp>
 #include <flap/consumer.hpp>
 
-#include "ast/scope.hpp"
-
 namespace flap::ast {
 
 class BinaryOperatorImpl final : public BinaryOperator {

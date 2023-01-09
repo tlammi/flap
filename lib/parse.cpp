@@ -1,6 +1,7 @@
 #include <flap/ast/int_literal.hpp>
 #include <flap/parse.hpp>
 #include <fstream>
+#include <map>
 #include <optional>
 
 #include "ast/binary_operator_impl.hpp"
@@ -25,7 +26,9 @@ class Parser {
         auto mod = std::make_unique<ast::ModuleImpl>();
         m_lexer.next();
         while (m_lexer.current().token != lex::Token::Eof) {
-            parse_primary(*mod);
+            auto ptr = parse_primary();
+            if (!ptr) continue;
+            mod->add(std::move(ptr));
         }
         return mod;
     }
@@ -34,12 +37,12 @@ class Parser {
     /**
      * Start parsing from "root" of the document
      * */
-    void parse_primary(ast::FunctionScope& scope) {
+    std::unique_ptr<ast::Ast> parse_primary() {
         // auto lexeme = m_lexer.next();
         using enum lex::Token;
         switch (m_lexer.current().token) {
             case Identifier:
-                parse_identifier(scope);
+                return parse_identifier();
                 break;
             case CommentOneLine:
                 m_lexer.next();
@@ -50,22 +53,38 @@ class Parser {
             case Eol:
                 break;
             case Eof:
-                return;
+                break;
             default:
                 do_throw();
         }
+        return nullptr;
     }
 
-    void parse_identifier(ast::FunctionScope& scope) {
+    std::unique_ptr<ast::Ast> parse_identifier() {
         using enum lex::Token;
         auto first_lexeme = m_lexer.current();
         auto lexeme = m_lexer.next();
-        if (lexeme.token != Colon) do_throw(Colon);
-        lexeme = m_lexer.next();
-        if (lexeme.token != Paren) do_throw(Paren);
-        lexeme = m_lexer.next();
+        if (lexeme.token == Colon) {
+            lexeme = m_lexer.next();
+            if (lexeme.token != Paren) do_throw(Paren);
+            lexeme = m_lexer.next();
+            return parse_function(first_lexeme.value);
+        }
+        if (lexeme.token == Paren) {
+            parse_function_pattern(m_funcs.at(first_lexeme.value));
+            return nullptr;
+        }
+        do_throw();
+    }
+
+    void parse_function_pattern(ast::FunctionImpl* func) {
+        //
+    }
+
+    std::unique_ptr<ast::Function> parse_function(std::string_view name) {
+        using enum lex::Token;
         auto params = parse_function_params();
-        lexeme = m_lexer.current();
+        auto lexeme = m_lexer.current();
         if (lexeme.token != ParenClose) do_throw(ParenClose);
         lexeme = m_lexer.next();
         if (lexeme.token != Arrow) do_throw(Arrow);
@@ -75,17 +94,19 @@ class Parser {
         lexeme = m_lexer.next();
         if (lexeme.token != Define) do_throw(Define);
         lexeme = m_lexer.next();
-        auto func = std::make_unique<ast::FunctionImpl>(
-            first_lexeme.value, return_type, std::move(params));
+        auto func = std::make_unique<ast::FunctionImpl>(name, return_type,
+                                                        std::move(params));
+        m_funcs[name] = func.get();
         if (lexeme.token != Brace) {
-            parse_short_function_body(*func);
-            scope.add(std::move(func));
-            return;
+            func->add(parse_short_function_body());
+            return std::move(func);
         }
         if (lexeme.token == Brace) {
-            parse_long_function_body(*func);
-            scope.add(std::move(func));
-            return;
+            auto stmts = parse_long_function_body();
+            for (auto&& s : stmts) {
+                func->add(std::move(s));
+            }
+            return std::move(func);
         }
         do_throw();
     }
@@ -112,30 +133,31 @@ class Parser {
         return out;
     }
 
-    void parse_short_function_body(ast::StmtScope& scope) {
+    std::unique_ptr<ast::RetStmt> parse_short_function_body() {
         auto ret_stmt = std::make_unique<ast::RetStmtImpl>();
         ret_stmt->add(parse_expr());
-        scope.add(std::move(ret_stmt));
+        return std::move(ret_stmt);
     }
 
-    void parse_long_function_body(ast::StmtScope& scope) {
+    std::vector<std::unique_ptr<ast::Stmt>> parse_long_function_body() {
         using enum lex::Token;
+        std::vector<std::unique_ptr<ast::Stmt>> out{};
         m_lexer.next();  // eat {
         while (m_lexer.current().token != BraceClose) {
-            parse_stmt(scope);
+            out.push_back(parse_stmt());
         }
         m_lexer.next();  // eat }
+        return out;
     }
 
-    void parse_stmt(ast::StmtScope& scope) {
+    std::unique_ptr<ast::Stmt> parse_stmt() {
         using enum lex::Token;
         auto lexeme = m_lexer.current();
         if (lexeme.token == Return) {
             m_lexer.next();
             auto stmt = std::make_unique<ast::RetStmtImpl>();
             stmt->add(parse_expr());
-            scope.add(std::move(stmt));
-            return;
+            return stmt;
         }
         if (lexeme.token == Identifier) {
             const auto name = lexeme.value;
@@ -149,8 +171,7 @@ class Parser {
             lexeme = m_lexer.next();
             auto res =
                 std::make_unique<ast::VarDefStmtImpl>(name, type, parse_expr());
-            scope.add(std::move(res));
-            return;
+            return res;
         }
         do_throw();
     }
@@ -231,6 +252,7 @@ class Parser {
     }
 
     lex::Lexer m_lexer;
+    std::map<std::string_view, ast::FunctionImpl*> m_funcs{};
 };
 }  // namespace
 
