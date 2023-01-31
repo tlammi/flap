@@ -14,8 +14,6 @@ int main(int argc, char** argv) {
     CLI::App app{"flap compiler"};
     std::string backend{"debug"};
     std::filesystem::path source{};
-    app.add_option("-b,--backend", backend,
-                   R"(Backend to use. "debug" or "llvm")");
     bool debug = false;
     app.add_flag("-d,--debug", debug, "Enable debug logs");
 
@@ -26,15 +24,8 @@ int main(int argc, char** argv) {
 
     auto doc = source == "-" ? flap::parse(std::cin) : flap::parse_file(source);
     if (debug) flap::set_log_stream(&std::cerr);
-    if (backend == "debug") {
-        auto consumer = flap::debug::make_consumer();
-        doc.root->accept(*consumer);
-    } else if (backend == "llvm") {
-        auto consumer = flap::llvm::make_consumer();
-        doc.root->accept(*consumer);
-        std::cout << consumer->llvm_ir();
-    } else {
-        throw std::runtime_error("Invalid consumer");
-    }
+    auto consumer = flap::llvm::make_consumer();
+    doc.root->accept(*consumer);
+    std::cout << consumer->llvm_ir();
 }
 

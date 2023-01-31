@@ -12,6 +12,5 @@ magic_enum_dep = magic_enum.get_variable('magic_enum_dep')
 
 pub_incdir = include_directories('include')
 
-subdir('consumer')
 subdir('lib')
 subdir('bin')
