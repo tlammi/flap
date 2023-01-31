@@ -1,7 +1,7 @@
 
 deps = [libflap_dep, libflap_consumer_llvm_dep, cli11_dep]
 
-executable('flap', 'flap.cpp',
+executable('flapc', 'flapc.cpp',
     include_directories: pub_incdir,
     dependencies: deps)
 
