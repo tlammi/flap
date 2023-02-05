@@ -13,7 +13,20 @@ class ValuePatternImpl final : public ValuePattern {
 
     void accept(Consumer& consumer) const { consumer.consume(*this); }
 
+    std::vector<const Stmt*> statements() const noexcept {
+        std::vector<const Stmt*> out{};
+        for (const auto& stmt : m_stmts) {
+            out.push_back(stmt.get());
+        }
+        return out;
+    }
+
+    void add_statement(std::unique_ptr<Stmt> stmt) {
+        m_stmts.push_back(std::move(stmt));
+    }
+
  private:
     std::unique_ptr<Expr> m_expr;
+    std::vector<std::unique_ptr<Stmt>> m_stmts{};
 };
 }  // namespace flap::ast

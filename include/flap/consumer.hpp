@@ -8,6 +8,7 @@
 #include <flap/ast/int_literal.hpp>
 #include <flap/ast/module.hpp>
 #include <flap/ast/ret_stmt.hpp>
+#include <flap/ast/value_pattern.hpp>
 #include <flap/ast/var_def_stmt.hpp>
 #include <memory>
 
@@ -45,6 +46,10 @@ class Consumer {
         return Recurse::Yes;
     }
     virtual Recurse consume(const ast::IdentifierExpr& expr) {
+        return Recurse::Yes;
+    }
+
+    virtual Recurse consume(const ast::ValuePattern& pattern) {
         return Recurse::Yes;
     }
 };

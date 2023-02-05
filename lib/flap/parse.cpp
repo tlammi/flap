@@ -11,6 +11,7 @@
 #include "ast/identifier_expr_impl.hpp"
 #include "ast/module_impl.hpp"
 #include "ast/ret_stmt_impl.hpp"
+#include "ast/value_pattern_impl.hpp"
 #include "ast/var_def_stmt_impl.hpp"
 #include "lex.hpp"
 #include "logs.hpp"
@@ -78,7 +79,24 @@ class Parser {
     }
 
     void parse_function_pattern(ast::FunctionImpl* func) {
-        //
+        using enum lex::Token;
+        m_lexer.next();
+        auto expr = parse_expr();
+        auto pattern = std::make_unique<ast::ValuePatternImpl>(std::move(expr));
+        check_eq(ParenClose);
+        m_lexer.next();
+        check_eq(FatArrow);
+        auto lexeme = m_lexer.next();
+
+        if (lexeme.token != Brace) {
+            pattern->add_statement(parse_short_function_body());
+        } else {
+            auto stmts = parse_long_function_body();
+            for (auto&& s : stmts) {
+                pattern->add_statement(std::move(s));
+            }
+        }
+        func->add_pattern(std::move(pattern));
     }
 
     std::unique_ptr<ast::Function> parse_function(std::string_view name) {

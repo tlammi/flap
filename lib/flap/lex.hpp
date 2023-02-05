@@ -17,6 +17,7 @@ enum class Token {
     Comma,             // ,
     Define,            // :=
     Arrow,             // ->
+    FatArrow,          // =>
     IntLiteral,        // 0 or 49 or 101 etc.
     Return,            // return
     CommentOneLine,    // //.*?\n

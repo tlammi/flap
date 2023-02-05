@@ -1,6 +1,19 @@
 # Flap grammar
 ```
-file : root_entry*
+file : root_entry1*
+
+
+root_entry1:
+	module |
+	namespace_oneline |
+	namespace_scope |
+	root_entry2
+
+module: "module" identifier
+
+namespace_oneline: "namespace" identifier
+
+namespace_scope: "namesapce identifier "{" root_entry2* "}"
 
 root_entry:
 	module_entry |

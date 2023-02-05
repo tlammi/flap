@@ -162,6 +162,7 @@ Lexeme Lexer::next_impl() {
     LEX_NO_VALUE("}", BraceClose);
     LEX_NO_VALUE(",", Comma);
     LEX_NO_VALUE("->", Arrow);
+    LEX_NO_VALUE("=>", FatArrow);
     LEX_NO_VALUE("\n", Eol);
     LEX_NO_VALUE("return", Return);
     if (auto lex = lex_comment_one_line(m_data)) return *lex;
@@ -169,7 +170,7 @@ Lexeme Lexer::next_impl() {
     if (auto lex = lex_identifier(m_data)) return *lex;
     if (auto lex = lex_int_literal(m_data)) return *lex;
     if (auto lex = lex_operator(m_data)) return *lex;
-    throw std::runtime_error("asdfasf");
+    throw std::runtime_error(std::string(m_data));
 }
 
 std::vector<Lexeme> Lexer::lex_all() {
