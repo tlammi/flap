@@ -19,7 +19,7 @@ _ { } [ ] # ( ) < > % : ; . ? * + - / ^ & | ~ ! = @ $ , \ " '
 
 Keywords:
 ```
-for, in, as, is, mut, const
+for, in, as, is, mut, const, return, where, type
 ```
 
 ## Basics
@@ -57,11 +57,23 @@ for, in, as, is, mut, const
     - unsigned: `u8, u16, u32, u64`
 - Floating point:
     - `f32, f64`
-- Arrays of above types:
+- Arrays of other types:
     - `[i8; 64]` -- Array of `i8` with `64` entries
 - Slices:
     - `[u64]` -- Nonowning reference to a continuous range of `u64`s
 - Unit type: `()`
+- Tuples of other types: `(i8, u8)`
+- Unions of other types: `(i8 | [u8])`
+
+
+### Type Aliases
+
+Type aliases are declared with syntax:
+```
+Variant: type := (i8 | u8)
+```
+
+
 
 ### Control Flow
 The language does not have normal control flow mechnisms like if, else or while
@@ -71,6 +83,15 @@ For loop is provided for iterating.
 - Function pattern matching by value:
     - called if no pattern matches: `func: (i: i32) -> () := i`
     - pattern to match `func(0) => 100`
+
+- Function pattern matching by type:
+    ```
+    Type: type := (i8 | u8)
+
+    foo: (t: Type) -> i8
+    foo(x: i8) => x
+    foo(x: u8) => x+1 as i8
+    ```
 
 - Loops:
     ```
@@ -87,4 +108,23 @@ For loop is provided for iterating.
         out += i
     }
     ```
+
+- Where clauses (alternative syntax for pattern matching):
+    ```
+    fibo: (n: u64) -> u64 := fibo(n-1)
+
+    fibo_impl(n: u64, counter: u64) -> u64 := fibo_impl(n-1, counter+n)
+    fibo_impl(n: u64, counter: u64) where n == 0 || n == 1 => counter
+    ```
+
+### Runtime
+
+The program execution starts from the global namespace `main` function.
+The function takes either a parameter `[[u8]]` or none and returns either
+`()` or `i32`. Therefore the following prototypes are valid:
+- `main: () -> ()`
+- `main: () -> i32`
+- `main: ([[u8]]) -> ()`
+- `main: ([[u8]]) -> i32`
+
 
