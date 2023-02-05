@@ -85,14 +85,14 @@ class Parser {
         using enum lex::Token;
         auto params = parse_function_params();
         auto lexeme = m_lexer.current();
-        if (lexeme.token != ParenClose) do_throw(ParenClose);
+        check_eq(ParenClose);
         lexeme = m_lexer.next();
-        if (lexeme.token != Arrow) do_throw(Arrow);
+        check_eq(Arrow);
         lexeme = m_lexer.next();
-        if (lexeme.token != Identifier) do_throw(Identifier);
+        check_eq(Identifier);
         auto return_type = lexeme.value;
         lexeme = m_lexer.next();
-        if (lexeme.token != Define) do_throw(Define);
+        check_eq(Define);
         lexeme = m_lexer.next();
         auto func = std::make_unique<ast::FunctionImpl>(name, return_type,
                                                         std::move(params));
@@ -239,6 +239,10 @@ class Parser {
         }
         return std::make_unique<ast::BinaryOperatorImpl>(
             lexeme.value, std::move(lhs), std::move(rhs));
+    }
+
+    void check_eq(lex::Token tok) {
+        if (m_lexer.current().token != tok) do_throw(tok);
     }
 
     [[noreturn]] void do_throw(
