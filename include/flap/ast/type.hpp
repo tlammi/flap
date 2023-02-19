@@ -1,10 +1,11 @@
 #pragma once
 
-#include <flap/ast/ast.hpp>
+#include <string_view>
 
 namespace flap::ast {
-class Module : public Ast {
- public:
+
+struct Type {
+    std::string_view name;
 };
 
 }  // namespace flap::ast

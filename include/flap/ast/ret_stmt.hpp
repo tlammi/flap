@@ -1,13 +1,13 @@
 #pragma once
 
-#include <flap/ast/stmt.hpp>
-
+#include <flap/ast/expr.hpp>
 namespace flap::ast {
 
-class RetStmt : public Stmt {
- public:
-    virtual const Expr& expr() const noexcept = 0;
-
- private:
+/**
+ * (Function) return statement
+ * */
+struct RetStmt {
+    Expr expr;
 };
+
 }  // namespace flap::ast
