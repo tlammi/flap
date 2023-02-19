@@ -5,8 +5,6 @@
 #include <optional>
 #include <stdexcept>
 
-#include "logs.hpp"
-
 namespace flap::lex {
 
 using namespace std::literals::string_view_literals;
@@ -139,7 +137,6 @@ struct Matcher {
 
 Lexeme Lexer::next() {
     m_current = next_impl();
-    DEBUG << "lexed: " << m_current;
     return m_current;
 }
 
