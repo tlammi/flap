@@ -22,3 +22,9 @@ TEST(Lex, MultiInt) {
     ASSERT_EQ(lexemes.at(1), first);
     ASSERT_EQ(lexemes.at(2), second);
 }
+
+TEST(Lex, Hex) {
+    auto lexemes = lex::lex("0x1234");
+    ASSERT_EQ(lexemes.size(), 3);
+}
+

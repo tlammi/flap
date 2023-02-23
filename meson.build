@@ -8,7 +8,7 @@ cli11 = subproject('cli11')
 cli11_dep = cli11.get_variable('CLI11_dep')
 
 
-pub_incdir = include_directories('include')
+pub_incdir = include_directories('include', is_system: true)
 priv_incdir = include_directories('lib')
 
 SRCS = []
