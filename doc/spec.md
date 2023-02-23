@@ -19,7 +19,7 @@ _ { } [ ] # ( ) < > % : ; . ? * + - / ^ & | ~ ! = @ $ , \ " '
 
 Keywords:
 ```
-for, in, as, is, mut, const, return, where, type
+for, in, as, is, mut, const, return, where, type, binop, unop
 ```
 
 ## Basics
@@ -110,12 +110,7 @@ For loop is provided for iterating.
     ```
 
 - Where clauses (alternative syntax for pattern matching):
-    ```
-    fibo: (n: u64) -> u64 := fibo(n-1)
-
-    fibo_impl(n: u64, counter: u64) -> u64 := fibo_impl(n-1, counter+n)
-    fibo_impl(n: u64, counter: u64) where n == 0 || n == 1 => counter
-    ```
+    TODO: Example missing
 
 ### Runtime
 
@@ -127,4 +122,24 @@ The function takes either a parameter `[[u8]]` or none and returns either
 - `main: ([[u8]]) -> ()`
 - `main: ([[u8]]) -> i32`
 
+
+
+## Program Structure
+
+### Document Root
+
+Grammar:
+```
+doc_root_elem*
+
+doc_root_elem =
+    import_decl |
+    ns_short |
+    ns_composite_stmt |
+    func_decl |
+    func_def |
+    func_pattern |
+    var_decl |
+
+```
 
