@@ -32,7 +32,12 @@ libflap = library('flap', srcs, include_directories: [pub_incdir, priv_incdir])
 libflap_dep = declare_dependency(link_with: libflap)
 test_args = {
   'include_directories': [pub_incdir, priv_incdir],
-  'dependencies': [dependency('gtest'), dependency('gtest_main'), libflap_dep]
+  'dependencies': [
+    dependency('gtest'),
+    dependency('gmock'),
+    dependency('gtest_main'),
+    libflap_dep
+  ]
 }
 
 foreach src : tests
