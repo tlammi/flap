@@ -26,5 +26,7 @@ TEST(Lex, MultiInt) {
 TEST(Lex, Hex) {
     auto lexemes = lex::lex("0x1234");
     ASSERT_EQ(lexemes.size(), 3);
+    const auto expected = lex::Lexeme{lex::Token::IntLit, "0x1234"};
+    ASSERT_EQ(lexemes.at(1), expected);
 }
 
