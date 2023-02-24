@@ -85,7 +85,7 @@ Lexeme lex_next(std::string_view& str) {
 
 std::vector<Lexeme> lex(std::string_view str) {
     std::vector<Lexeme> out{};
-    out.emplace_back(Begin, "");
+    out.push_back(Lexeme{Begin, ""});
     while (true) {
         out.emplace_back(lex_next(str));
         if (out.back().token == End) break;
