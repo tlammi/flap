@@ -3,6 +3,7 @@
 #include <ostream>
 #include <vector>
 
+#include "3rdparty/magic_enum.hpp"
 #include "flap/types/string_view.hpp"
 
 namespace flap::lex {
@@ -24,8 +25,13 @@ constexpr bool operator==(const Lexeme& l, const Lexeme& r) {
     return l.token == r.token && l.value == r.value;
 }
 
+inline std::ostream& operator<<(std::ostream& s, Token tok) {
+    s << magic_enum::enum_name(tok);
+    return s;
+}
+
 inline std::ostream& operator<<(std::ostream& s, const Lexeme& lex) {
-    s << "Lexeme{" << lex.value << '}';
+    s << "Lexeme{" << lex.token << ", \"" << lex.value << "\"}";
     return s;
 }
 
