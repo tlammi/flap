@@ -41,6 +41,13 @@ TEST(Lex, Paren) {
     ASSERT_EQ(lexemes.at(2), second);
 }
 
+TEST(Lex, Colon) {
+    auto lexemes = lex::lex("::::::");
+    ASSERT_EQ(lexemes.size(), 8);
+    constexpr auto expected = Lex{Tok::Colon, ":"};
+    ASSERT_EQ(lexemes.at(6), expected);
+}
+
 TEST(Lex, Iden) {
     auto lexemes = lex::lex("foobar");
     ASSERT_EQ(lexemes.size(), 3);

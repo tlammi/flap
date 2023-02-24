@@ -79,6 +79,7 @@ auto lex_next(std::string_view& str) -> Lexeme {
     if (auto val = lex_int(str)) return *val;
     LEX_CHAR('(', Paren);
     LEX_CHAR(')', ParenClose);
+    LEX_CHAR(':', Colon);
     if (auto val = lex_iden(str)) return *val;
     throw Exception("Lexing error");
 }
