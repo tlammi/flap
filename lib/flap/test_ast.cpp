@@ -23,3 +23,14 @@ TEST(IntLit, Value) {
     constexpr IntLit b{"0b111"};
     ASSERT_EQ(b.value(), "111");
 }
+
+TEST(IntLit, RawValue) {
+    constexpr IntLit d{"100"};
+    ASSERT_EQ(d.raw_value(), "100");
+
+    constexpr IntLit h{"0x101"};
+    ASSERT_EQ(h.raw_value(), "0x101");
+
+    constexpr IntLit b{"0b111"};
+    ASSERT_EQ(b.raw_value(), "0b111");
+}
