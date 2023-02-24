@@ -13,7 +13,7 @@ Checks:          '
 	-readability-identifier-length
 '
 WarningsAsErrors: ''
-HeaderFilterRegex: ''
+HeaderFilterRegex: 'flap/.*'
 AnalyzeTemporaryDtors: false
 FormatStyle:     none
 User:            tlammi

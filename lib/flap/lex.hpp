@@ -22,19 +22,19 @@ struct Lexeme {
     StringView value;
 };
 
-constexpr bool operator==(const Lexeme& l, const Lexeme& r) {
+constexpr auto operator==(const Lexeme& l, const Lexeme& r) -> bool {
     return l.token == r.token && l.value == r.value;
 }
 
-inline std::ostream& operator<<(std::ostream& s, Token tok) {
+inline auto operator<<(std::ostream& s, Token tok) -> std::ostream& {
     s << magic_enum::enum_name(tok);
     return s;
 }
 
-inline std::ostream& operator<<(std::ostream& s, const Lexeme& lex) {
+inline auto operator<<(std::ostream& s, const Lexeme& lex) -> std::ostream& {
     s << "Lexeme{" << lex.token << ", \"" << lex.value << "\"}";
     return s;
 }
 
-std::vector<Lexeme> lex(std::string_view str);
+auto lex(std::string_view str) -> std::vector<Lexeme>;
 }  // namespace flap::lex
