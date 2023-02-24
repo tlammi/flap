@@ -22,7 +22,6 @@ void skip(std::string_view& view) {
 }
 
 std::optional<Lexeme> lex_int(std::string_view& view) {
-    if (view.empty()) return std::nullopt;
     size_t idx = 0;
     if (view.starts_with("0x")) {
         idx = 2;
@@ -38,11 +37,23 @@ std::optional<Lexeme> lex_int(std::string_view& view) {
     view.remove_prefix(idx);
     return Lexeme{IntLit, res};
 }
+std::optional<Lexeme> lex_char(std::string_view& view, char c, Token tok) {
+    if (view.front() == c) {
+        auto res = view.substr(0, 1);
+        view.remove_prefix(1);
+        return Lexeme{tok, res};
+    }
+    return std::nullopt;
+}
+#define LEX_CHAR(c, tok) \
+    if (auto val = lex_char(str, c, tok)) return *val;
 
 Lexeme lex_next(std::string_view& str) {
     skip(str);
     if (str.empty()) return {End, ""};
     if (auto val = lex_int(str)) return *val;
+    LEX_CHAR('(', Paren);
+    LEX_CHAR(')', ParenClose);
     throw Exception("Lexing error");
 }
 
