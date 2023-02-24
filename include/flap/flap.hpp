@@ -1,8 +1,14 @@
 #pragma once
 
 #include <flap/ast/node.hpp>
+#include <string>
 namespace flap {
 
-void parse(std::string str);
+struct Parsed {
+    std::string doc;
+    ast::Node root;
+};
 
-}
+Parsed parse(std::string doc);
+
+}  // namespace flap

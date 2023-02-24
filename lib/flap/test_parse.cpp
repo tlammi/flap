@@ -2,4 +2,5 @@
 
 #include <flap/flap.hpp>
 
-TEST(Expr, IntLit) {}
+using flap::parse;
+TEST(Expr, IntLit) { auto res = parse("100"); }
