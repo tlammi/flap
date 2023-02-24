@@ -2,6 +2,6 @@
 
 namespace flap {
 Parsed parse(std::string doc) {
-    return Parsed{std::move(doc), {ast::IntLit{"100"}}};
+    return Parsed{std::move(doc), ast::Node{ast::IntLit{"100"}}};
 }
 }  // namespace flap
