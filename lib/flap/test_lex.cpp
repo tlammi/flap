@@ -40,3 +40,11 @@ TEST(Lex, Paren) {
     ASSERT_EQ(lexemes.at(1), first);
     ASSERT_EQ(lexemes.at(2), second);
 }
+
+TEST(Lex, Iden) {
+    auto lexemes = lex::lex("foobar");
+    ASSERT_EQ(lexemes.size(), 3);
+    const auto expected = Lex{Tok::Iden, "foobar"};
+    ASSERT_EQ(lexemes.at(1), expected);
+}
+

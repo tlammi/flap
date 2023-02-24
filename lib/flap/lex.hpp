@@ -14,6 +14,7 @@ enum class Token {
     IntLit,      // Integer literal
     Paren,       // (
     ParenClose,  // )
+    Iden,        // Identifier
 };
 
 struct Lexeme {
