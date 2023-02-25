@@ -1,10 +1,10 @@
 #pragma once
 
+#include <flap/types/string_view.hpp>
 #include <ostream>
 #include <vector>
 
 #include "3rdparty/magic_enum.hpp"
-#include "flap/types/string_view.hpp"
 
 namespace flap::lex {
 
@@ -36,6 +36,19 @@ inline auto operator<<(std::ostream& s, const Lexeme& lex) -> std::ostream& {
     s << "Lexeme{" << lex.token << ", \"" << lex.value << "\"}";
     return s;
 }
+
+class Lexer {
+ public:
+    Lexer() {}
+    explicit Lexer(StringView str) : m_str{str} {}
+
+    Lexeme current();
+
+    Lexeme next();
+
+ private:
+    StringView m_str{};
+};
 
 auto lex(std::string_view str) -> std::vector<Lexeme>;
 }  // namespace flap::lex
