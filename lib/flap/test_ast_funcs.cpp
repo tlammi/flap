@@ -21,3 +21,15 @@ TEST(Node, HoldsExpr) {
     ASSERT_TRUE(ast::is_expr(n));
 }
 
+TEST(Expr, GetInt) {
+    ast::Expr e{ast::IntLit{"1"}};
+    const auto& i = get_int_lit(e);
+    ASSERT_EQ(i.value(), "1");
+}
+
+TEST(Node, GetInt) {
+    ast::Expr e{ast::IntLit{"1"}};
+    ast::Node n{std::move(e)};
+    const auto& i = get_int_lit(n);
+    ASSERT_EQ(i.value(), "1");
+}

@@ -15,7 +15,8 @@ struct is_in_variant<T, std::variant<F, Ts...>>
     : is_in_variant<T, std::variant<Ts...>> {};
 
 template <class T, class Var>
-constexpr bool is_in_variant_v = is_in_variant<T, Var>::value;
+constexpr bool is_in_variant_v =
+    is_in_variant<T, std::remove_cvref_t<Var>>::value;
 
 template <class First, class... Ts, class Var>
 constexpr bool nested_holds(const Var& var) {
@@ -56,12 +57,13 @@ DEF_IS(is_expr, Expr)
 
 #undef DEF_IS
 
-#define DEF_GET(name, ...)                                \
-    template <class... Ts>                                \
-    constexpr bool name(const std::variant<Ts...>& var) { \
-        return detail::nested_get<__VA_ARGS__>(var);      \
+#define DEF_GET(name, ...)                                              \
+    template <class Var>                                                \
+    constexpr auto name(Var&& var) {                                    \
+        return detail::nested_get<__VA_ARGS__>(std::forward<Var>(var)); \
     }
 
+DEF_GET(get_int_lit, Expr, IntLit);
 #undef DEF_GET
 
 }  // namespace flap::ast
