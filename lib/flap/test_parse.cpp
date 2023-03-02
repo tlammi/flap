@@ -3,8 +3,10 @@
 #include <flap/flap.hpp>
 
 using flap::parse;
+namespace ast = flap::ast;
+
 TEST(Expr, IntLit) {
     auto res = parse("100");
-    ASSERT_TRUE(res.root.is_int_lit());
+    ASSERT_TRUE(ast::is_int_lit(res.root));
 }
 

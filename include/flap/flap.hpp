@@ -1,5 +1,6 @@
 #pragma once
 
+#include <flap/ast/func.hpp>
 #include <flap/ast/node.hpp>
 #include <string>
 namespace flap {
