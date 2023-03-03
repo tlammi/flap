@@ -5,5 +5,6 @@
 
 namespace flap::ast {
 
-using Stmt = std::variant<VarDef>;
-}
+struct Func;
+using Stmt = std::variant<VarDef, Func>;
+}  // namespace flap::ast

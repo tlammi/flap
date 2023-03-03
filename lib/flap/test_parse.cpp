@@ -42,3 +42,8 @@ TEST(Stmt, VarDef) {
     const auto& i = ast::get_int_lit(v.expr);
     ASSERT_EQ(i.value(), "100");
 }
+
+TEST(Func, OneLine) {
+    auto res = parse("func: () -> i32 := 4");
+    ASSERT_TRUE(ast::is_func(res.root));
+}

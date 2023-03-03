@@ -14,18 +14,41 @@ struct Parser {
             return {ast::IntLit{lexeme.value}};
         }
         if (lexeme.token == Tok::Iden) {
-            auto iden = lexeme.value;
-            if (lexer.next().token != Tok::Colon) throw std::runtime_error(":");
-            auto type = lexer.next();
-            if (type.token != Tok::Iden) throw std::runtime_error("type");
-            if (lexer.next().token != Tok::InitOper)
-                throw std::runtime_error(":=");
-            auto expr = lexer.next();
-            if (expr.token != Tok::IntLit) throw std::runtime_error("int lit");
-            return {ast::VarDef{iden, type.value,
-                                ast::Expr{ast::IntLit{expr.value}}}};
+            return parse_from_iden();
         }
         throw std::runtime_error("oh no");
+    }
+
+    ast::Stmt parse_from_iden() {
+        auto iden = lexer.current();
+        if (lexer.next().token != Tok::Colon) throw std::runtime_error(":");
+        auto next = lexer.next();
+        switch (next.token) {
+            case Tok::Iden: {
+                get(Tok::InitOper);
+                auto expr = get(Tok::IntLit);
+                return {ast::VarDef{iden.value, next.value,
+                                    ast::Expr{ast::IntLit{expr.value}}}};
+            }
+            case Tok::Paren: {
+                get(Tok::ParenClose);
+                get(Tok::Arrow);
+                auto ret_type = get(Tok::Iden);
+                get(Tok::InitOper);
+                auto expr = get(Tok::IntLit);
+                std::vector<ast::Stmt> statements{};
+                return {ast::Func{iden.value, ret_type.value,
+                                  std::move(statements)}};
+            }
+            default:
+                throw std::runtime_error("type or (");
+        }
+    }
+
+    lex::Lexeme get(Tok tok) {
+        auto res = lexer.next();
+        if (res.token != tok) throw std::runtime_error("discard");
+        return res;
     }
 
     lex::Lexer lexer;

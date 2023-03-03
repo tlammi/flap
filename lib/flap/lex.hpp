@@ -16,6 +16,7 @@ enum class Token {
     ParenClose,  // )
     Colon,       // :
     InitOper,    // :=
+    Arrow,       // ->
     Iden,        // Identifier
 };
 
