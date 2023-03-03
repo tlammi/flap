@@ -36,7 +36,9 @@ struct Parser {
                 auto ret_type = get(Tok::Iden);
                 get(Tok::InitOper);
                 auto expr = get(Tok::IntLit);
-                std::vector<ast::Stmt> statements{};
+                auto int_lit = ast::IntLit{expr.value};
+                std::vector<ast::Stmt> statements{
+                    ast::RetStmt{std::move(int_lit)}};
                 return {ast::Func{iden.value, ret_type.value,
                                   std::move(statements)}};
             }

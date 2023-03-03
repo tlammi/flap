@@ -46,4 +46,9 @@ TEST(Stmt, VarDef) {
 TEST(Func, OneLine) {
     auto res = parse("func: () -> i32 := 4");
     ASSERT_TRUE(ast::is_func(res.root));
+    const auto& f = ast::get_func(res.root);
+    ASSERT_EQ(f.name, "func");
+    ASSERT_EQ(f.return_type, "i32");
+    ASSERT_EQ(f.statements.size(), 1);
+    ASSERT_TRUE(ast::is_ret_stmt(f.statements.at(0)));
 }
