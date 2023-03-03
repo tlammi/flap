@@ -32,3 +32,4 @@ TEST(Expr, IntLitBin) {
     ASSERT_EQ(i.raw_value(), "0b111");
 }
 
+TEST(Func, Short) { auto res = parse("func: () -> i32 := 42"); }

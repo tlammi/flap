@@ -6,5 +6,5 @@ SRCS += files(
   'test_ast.cpp',
   'test_parse.cpp',
   'test_util.cpp',
-  'test_ast_funcs.cpp',
+  'test_ast_access.cpp',
 )
