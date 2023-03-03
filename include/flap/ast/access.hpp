@@ -54,6 +54,8 @@ constexpr auto nested_get(Var&& var) {
 
 DEF_IS(is_int_lit, Expr, IntLit)
 DEF_IS(is_expr, Expr)
+DEF_IS(is_stmt, Stmt)
+DEF_IS(is_var_def, Stmt, VarDef)
 
 #undef DEF_IS
 

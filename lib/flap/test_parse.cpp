@@ -32,4 +32,7 @@ TEST(Expr, IntLitBin) {
     ASSERT_EQ(i.raw_value(), "0b111");
 }
 
-TEST(Func, Short) { auto res = parse("func: () -> i32 := 42"); }
+TEST(Stmt, VarDef) {
+    auto res = parse("i: i32 := 100");
+    ASSERT_TRUE(ast::is_var_def(res.root));
+}

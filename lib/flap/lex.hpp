@@ -15,6 +15,7 @@ enum class Token {
     Paren,       // (
     ParenClose,  // )
     Colon,       // :
+    InitOper,    // :=
     Iden,        // Identifier
 };
 
@@ -42,12 +43,13 @@ class Lexer {
     Lexer() {}
     explicit Lexer(StringView str) : m_str{str} {}
 
-    Lexeme current();
+    auto current() const noexcept -> Lexeme;
 
-    Lexeme next();
+    auto next() -> Lexeme;
 
  private:
     StringView m_str{};
+    Lexeme m_cur{Token::Begin, ""};
 };
 
 auto lex(std::string_view str) -> std::vector<Lexeme>;
