@@ -35,4 +35,10 @@ TEST(Expr, IntLitBin) {
 TEST(Stmt, VarDef) {
     auto res = parse("i: i32 := 100");
     ASSERT_TRUE(ast::is_var_def(res.root));
+    const auto& v = ast::get_var_def(res.root);
+    ASSERT_EQ(v.name, "i");
+    ASSERT_EQ(v.type, "i32");
+    ASSERT_TRUE(ast::is_int_lit(v.expr));
+    const auto& i = ast::get_int_lit(v.expr);
+    ASSERT_EQ(i.value(), "100");
 }

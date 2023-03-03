@@ -66,6 +66,7 @@ DEF_IS(is_var_def, Stmt, VarDef)
     }
 
 DEF_GET(get_int_lit, Expr, IntLit);
+DEF_GET(get_var_def, Stmt, VarDef);
 #undef DEF_GET
 
 }  // namespace flap::ast
