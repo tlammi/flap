@@ -1,7 +1,9 @@
 #include <flap/flap.hpp>
 
 namespace flap {
-Parsed parse(std::string doc) {
-    return Parsed{std::move(doc), ast::Node{ast::IntLit{"100"}}};
-}
+
+Parsed::Parsed(std::string doc)
+    : doc{std::move(doc)}, root{ast::Node{ast::IntLit{this->doc}}} {}
+
+Parsed parse(std::string doc) { return Parsed(std::move(doc)); }
 }  // namespace flap
