@@ -4,6 +4,7 @@
 #include <optional>
 
 #include "flap/exception.hpp"
+#include "flap/logs.hpp"
 
 namespace flap::lex {
 
@@ -118,6 +119,7 @@ auto Lexer::current() const noexcept -> Lexeme { return m_cur; }
 
 auto Lexer::next() -> Lexeme {
     m_cur = lex_next(m_str);
+    logs::debug("lex: ", m_cur);
     return m_cur;
 }
 

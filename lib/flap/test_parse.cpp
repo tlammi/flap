@@ -67,11 +67,16 @@ TEST(Func, Long) {
     ASSERT_EQ(f.statements.size(), 1);
 }
 
-// TEST(Func, IdenExpr) {
-//     auto res = parse(R"(
-//     f: () -> i32 := {
-//         var: i32 := 100
-//         return var
-//     }
-//     )");
-// }
+TEST(Func, IdenExpr) {
+    auto res = parse(R"(
+     f: () -> i32 := {
+         var: i32 := 100
+         return var
+     }
+     )");
+    ASSERT_TRUE(ast::is_func(res.root));
+    const auto& f = ast::get_func(res.root);
+    ASSERT_EQ(f.name, "f");
+    ASSERT_EQ(f.return_type, "i32");
+    ASSERT_EQ(f.statements.size(), 2);
+}

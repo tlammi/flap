@@ -33,6 +33,11 @@ struct Parser {
                 lexer.next();
                 return {ast::IntLit{cur.value}};
             }
+            case Tok::Iden: {
+                auto iden = lexer.current();
+                lexer.next();
+                return ast::IdenExpr{iden.value};
+            }
             default:
                 wrong_lex(lexer.current());
         }
@@ -64,6 +69,7 @@ struct Parser {
         if (lexer.next().token == Tok::Brace) {
             // long func body
             std::vector<ast::Stmt> statements{};
+            lexer.next();
             while (lexer.current().token != Tok::BraceClose) {
                 statements.push_back(parse_stmt());
             }
@@ -75,14 +81,19 @@ struct Parser {
     }
 
     ast::Stmt parse_stmt() {
-        auto lexeme = lexer.next();
+        // auto lexeme = lexer.next();
+        auto lexeme = lexer.current();
         switch (lexeme.token) {
             case Tok::Ret: {
                 lexer.next();
                 return ast::RetStmt{parse_expr()};
             }
             case Tok::Iden: {
-                // implement
+                get(Tok::Colon);
+                auto type = get(Tok::Iden);
+                get(Tok::InitOper);
+                lexer.next();
+                return ast::VarDef{lexeme.value, type.value, parse_expr()};
             }
             default:
                 wrong_lex(lexeme);
