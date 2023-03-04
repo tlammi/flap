@@ -43,7 +43,7 @@ TEST(Stmt, VarDef) {
     ASSERT_EQ(i.value(), "100");
 }
 
-TEST(Func, OneLine) {
+TEST(Func, Short) {
     auto res = parse("func: () -> i32 := 4");
     ASSERT_TRUE(ast::is_func(res.root));
     const auto& f = ast::get_func(res.root);
@@ -53,7 +53,7 @@ TEST(Func, OneLine) {
     ASSERT_TRUE(ast::is_ret_stmt(f.statements.at(0)));
 }
 
-TEST(Func, MultiLine) {
+TEST(Func, Long) {
     auto res = parse(R"(
     f: () -> i32 := {
         return 100
