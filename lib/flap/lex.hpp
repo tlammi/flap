@@ -14,6 +14,8 @@ enum class Token {
     IntLit,      // Integer literal
     Paren,       // (
     ParenClose,  // )
+    Brace,       // {
+    BraceClose,  //{
     Colon,       // :
     InitOper,    // :=
     Arrow,       // ->

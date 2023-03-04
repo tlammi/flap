@@ -104,9 +104,11 @@ auto lex_next(std::string_view& str) -> Lexeme {
     LEX_STR("->", Arrow);
     LEX_CHAR('(', Paren);
     LEX_CHAR(')', ParenClose);
+    LEX_CHAR('{', Brace);
+    LEX_CHAR('}', BraceClose);
     LEX_CHAR(':', Colon);
     if (auto val = lex_iden(str)) return *val;
-    throw Exception("Lexing error");
+    throw Exception("Unsupported token at: '", str, '\'');
 }
 
 }  // namespace

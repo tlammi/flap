@@ -41,6 +41,15 @@ TEST(Lex, Paren) {
     ASSERT_EQ(lexemes.at(2), second);
 }
 
+TEST(Lex, Brace) {
+    auto lexemes = lex::lex("{}");
+    ASSERT_EQ(lexemes.size(), 4);
+    const auto first = Lex{Tok::Brace, "{"};
+    ASSERT_EQ(lexemes.at(1), first);
+    const auto second = Lex{Tok::BraceClose, "}"};
+    ASSERT_EQ(lexemes.at(2), second);
+}
+
 TEST(Lex, Colon) {
     auto lexemes = lex::lex("::::::");
     ASSERT_EQ(lexemes.size(), 8);
