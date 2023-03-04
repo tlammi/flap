@@ -28,8 +28,11 @@ struct Parser {
 
     ast::Expr parse_expr() {
         switch (lexer.current().token) {
-            case Tok::IntLit:
-                return {ast::IntLit{lexer.current().value}};
+            case Tok::IntLit: {
+                auto cur = lexer.current();
+                lexer.next();
+                return {ast::IntLit{cur.value}};
+            }
             default:
                 wrong_lex(lexer.current());
         }
@@ -42,9 +45,8 @@ struct Parser {
         switch (next.token) {
             case Tok::Iden: {
                 get(Tok::InitOper);
-                auto expr = get(Tok::IntLit);
-                return {ast::VarDef{iden.value, next.value,
-                                    ast::Expr{ast::IntLit{expr.value}}}};
+                lexer.next();
+                return {ast::VarDef{iden.value, next.value, parse_expr()}};
             }
             case Tok::Paren: {
                 get(Tok::ParenClose);
@@ -67,10 +69,7 @@ struct Parser {
             }
             return ast::Func{name, ret_type, std::move(statements)};
         } else {
-            // short func body
-            auto expr = lexer.current();
-            auto int_lit = ast::IntLit{expr.value};
-            std::vector<ast::Stmt> statements{ast::RetStmt{std::move(int_lit)}};
+            std::vector<ast::Stmt> statements{ast::RetStmt{parse_expr()}};
             return ast::Func{name, ret_type, std::move(statements)};
         }
     }
@@ -79,10 +78,8 @@ struct Parser {
         auto lexeme = lexer.next();
         switch (lexeme.token) {
             case Tok::Ret: {
-                auto expr = get(Tok::IntLit);
-                auto int_lit = ast::IntLit{expr.value};
                 lexer.next();
-                return ast::RetStmt{std::move(int_lit)};
+                return ast::RetStmt{parse_expr()};
             }
             case Tok::Iden: {
                 // implement
