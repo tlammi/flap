@@ -43,6 +43,7 @@ test_args = {
 foreach src : tests
   stem = fs.stem(src)
   test_exe = executable(stem, src, kwargs: test_args)
-  name = stem.replace('_', ' ')
+  name = stem.replace('test_', '')
+  name = name.replace('_', '-')
   test(name, test_exe)
 endforeach
