@@ -1,10 +1,15 @@
 #include <flap/flap.hpp>
 
 #include "flap/algo.hpp"
+#include "flap/exception.hpp"
 #include "flap/lex.hpp"
 
 namespace flap {
 namespace {
+
+[[noreturn]] auto wrong_lex(lex::Lexeme actual) -> void {
+    throw UnexpectedToken(actual);
+}
 
 using Tok = lex::Token;
 struct Parser {
@@ -17,7 +22,7 @@ struct Parser {
         if (lexeme.token == Tok::Iden) {
             return parse_from_iden();
         }
-        throw std::runtime_error("oh no");
+        wrong_lex(lexeme);
     }
 
     ast::Expr parse_expr() {
@@ -25,13 +30,13 @@ struct Parser {
             case Tok::IntLit:
                 return {ast::IntLit{lexer.current().value}};
             default:
-                throw std::runtime_error("expr");
+                wrong_lex(lexer.current());
         }
     }
 
-    ast::Stmt parse_from_iden() {
+    ast::Node parse_from_iden() {
         auto iden = lexer.current();
-        if (lexer.next().token != Tok::Colon) throw std::runtime_error(":");
+        if (lexer.next().token != Tok::Colon) wrong_lex(lexer.current());
         auto next = lexer.next();
         switch (next.token) {
             case Tok::Iden: {
@@ -53,13 +58,13 @@ struct Parser {
                                   std::move(statements)}};
             }
             default:
-                throw std::runtime_error("type or (");
+                wrong_lex(next);
         }
     }
 
     lex::Lexeme get(Tok tok) {
         auto res = lexer.next();
-        if (res.token != tok) throw std::runtime_error("discard");
+        if (res.token != tok) wrong_lex(res);
         return res;
     }
 
