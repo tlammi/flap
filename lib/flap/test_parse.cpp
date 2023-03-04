@@ -79,4 +79,6 @@ TEST(Func, IdenExpr) {
     ASSERT_EQ(f.name, "f");
     ASSERT_EQ(f.return_type, "i32");
     ASSERT_EQ(f.statements.size(), 2);
+    ASSERT_TRUE(ast::is_var_def(f.statements.at(0)));
+    ASSERT_TRUE(ast::is_ret_stmt(f.statements.at(1)));
 }
