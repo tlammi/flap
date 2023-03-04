@@ -25,3 +25,21 @@ TEST(Scope, ParentAccess) {
     ASSERT_EQ(child->at("foo"), 2);
     ASSERT_EQ(parent->at("foo"), 1);
 }
+
+TEST(Scope, ParentRef) {
+    auto scope = [] {
+        auto parent = make_scope<int>();
+        parent->insert("bar", 1);
+        return make_scope(parent);
+    }();
+
+    ASSERT_EQ(scope->at("bar"), 1);
+    scope->insert("bar", 4);
+    ASSERT_EQ(scope->at("bar"), 4);
+    scope->insert("baz", 1);
+    ASSERT_EQ(scope->at("baz"), 1);
+
+    scope = scope->parent();
+    ASSERT_EQ(scope->at("bar"), 1);
+    ASSERT_FALSE(scope->contains("baz"));
+}

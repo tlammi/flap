@@ -27,6 +27,12 @@ class Scope {
         throw std::runtime_error("Scope::at()");
     }
 
+    ScopePtr<V> parent() { return m_parent; }
+
+    bool contains(std::string_view key) const noexcept {
+        return m_map.find(key) != m_map.end();
+    }
+
  private:
     Scope() = default;
     Scope(ScopePtr<V> parent) : m_parent{std::move(parent)} {}
