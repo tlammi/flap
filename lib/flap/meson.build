@@ -8,4 +8,5 @@ SRCS += files(
   'test_util.cpp',
   'test_ast_access.cpp',
   'test_algo.cpp',
+  'test_scope.cpp',
 )
