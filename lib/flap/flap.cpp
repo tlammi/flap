@@ -1,5 +1,6 @@
 #include <flap/flap.hpp>
 
+#include "flap/algo.hpp"
 #include "flap/lex.hpp"
 
 namespace flap {
@@ -10,13 +11,22 @@ struct Parser {
     // entrypoint for the parsing
     ast::Node parse() {
         auto lexeme = lexer.next();
-        if (lexeme.token == Tok::IntLit) {
-            return {ast::IntLit{lexeme.value}};
+        if (any_of_eq(lexeme.token, Tok::IntLit)) {
+            return parse_expr();
         }
         if (lexeme.token == Tok::Iden) {
             return parse_from_iden();
         }
         throw std::runtime_error("oh no");
+    }
+
+    ast::Expr parse_expr() {
+        switch (lexer.current().token) {
+            case Tok::IntLit:
+                return {ast::IntLit{lexer.current().value}};
+            default:
+                throw std::runtime_error("expr");
+        }
     }
 
     ast::Stmt parse_from_iden() {
