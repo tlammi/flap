@@ -102,6 +102,7 @@ auto lex_next(std::string_view& str) -> Lexeme {
     if (auto val = lex_int(str)) return *val;
     LEX_STR(":=", InitOper);
     LEX_STR("->", Arrow);
+    LEX_STR("return", Ret);
     LEX_CHAR('(', Paren);
     LEX_CHAR(')', ParenClose);
     LEX_CHAR('{', Brace);

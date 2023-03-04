@@ -52,3 +52,18 @@ TEST(Func, OneLine) {
     ASSERT_EQ(f.statements.size(), 1);
     ASSERT_TRUE(ast::is_ret_stmt(f.statements.at(0)));
 }
+
+TEST(Func, MultiLine) {
+    auto res = parse(R"(
+    f: () -> i32 := {
+        return 100
+    }
+    )");
+
+    ASSERT_TRUE(ast::is_func(res.root));
+    const auto& f = ast::get_func(res.root);
+    ASSERT_EQ(f.name, "f");
+    ASSERT_EQ(f.return_type, "i32");
+    ASSERT_EQ(f.statements.size(), 1);
+}
+

@@ -1,4 +1,5 @@
 #include <flap/flap.hpp>
+#include <iostream>
 
 #include "flap/algo.hpp"
 #include "flap/exception.hpp"
@@ -36,7 +37,7 @@ struct Parser {
 
     ast::Node parse_from_iden() {
         auto iden = lexer.current();
-        if (lexer.next().token != Tok::Colon) wrong_lex(lexer.current());
+        get(Tok::Colon);
         auto next = lexer.next();
         switch (next.token) {
             case Tok::Iden: {
@@ -50,15 +51,27 @@ struct Parser {
                 get(Tok::Arrow);
                 auto ret_type = get(Tok::Iden);
                 get(Tok::InitOper);
-                auto expr = get(Tok::IntLit);
-                auto int_lit = ast::IntLit{expr.value};
-                std::vector<ast::Stmt> statements{
-                    ast::RetStmt{std::move(int_lit)}};
-                return {ast::Func{iden.value, ret_type.value,
-                                  std::move(statements)}};
+                return parse_func_body(iden.value, ret_type.value);
             }
             default:
                 wrong_lex(next);
+        }
+    }
+
+    ast::Func parse_func_body(StringView name, StringView ret_type) {
+        // long func body
+        if (lexer.next().token == Tok::Brace) {
+            get(Tok::Ret);
+            auto expr = get(Tok::IntLit);
+            auto int_lit = ast::IntLit{expr.value};
+            std::vector<ast::Stmt> statements{ast::RetStmt{std::move(int_lit)}};
+            return ast::Func{name, ret_type, std::move(statements)};
+        } else {
+            std::cerr << lexer.current() << '\n';
+            auto expr = lexer.current();
+            auto int_lit = ast::IntLit{expr.value};
+            std::vector<ast::Stmt> statements{ast::RetStmt{std::move(int_lit)}};
+            return ast::Func{name, ret_type, std::move(statements)};
         }
     }
 

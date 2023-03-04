@@ -19,6 +19,7 @@ enum class Token {
     Colon,       // :
     InitOper,    // :=
     Arrow,       // ->
+    Ret,         // return
     Iden,        // Identifier
 };
 
