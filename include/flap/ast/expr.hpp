@@ -1,10 +1,11 @@
 #pragma once
 
+#include <flap/ast/iden_expr.hpp>
 #include <flap/ast/int_lit.hpp>
 #include <variant>
 
 namespace flap::ast {
 
-using Expr = std::variant<IntLit>;
+using Expr = std::variant<IntLit, IdenExpr>;
 
 }

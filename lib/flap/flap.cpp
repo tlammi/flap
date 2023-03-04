@@ -1,9 +1,9 @@
 #include <flap/flap.hpp>
-#include <iostream>
 
 #include "flap/algo.hpp"
 #include "flap/exception.hpp"
 #include "flap/lex.hpp"
+#include "flap/types/scope.hpp"
 
 namespace flap {
 namespace {
@@ -59,19 +59,36 @@ struct Parser {
     }
 
     ast::Func parse_func_body(StringView name, StringView ret_type) {
-        // long func body
         if (lexer.next().token == Tok::Brace) {
-            get(Tok::Ret);
-            auto expr = get(Tok::IntLit);
-            auto int_lit = ast::IntLit{expr.value};
-            std::vector<ast::Stmt> statements{ast::RetStmt{std::move(int_lit)}};
+            // long func body
+            std::vector<ast::Stmt> statements{};
+            while (lexer.current().token != Tok::BraceClose) {
+                statements.push_back(parse_stmt());
+            }
             return ast::Func{name, ret_type, std::move(statements)};
         } else {
-            std::cerr << lexer.current() << '\n';
+            // short func body
             auto expr = lexer.current();
             auto int_lit = ast::IntLit{expr.value};
             std::vector<ast::Stmt> statements{ast::RetStmt{std::move(int_lit)}};
             return ast::Func{name, ret_type, std::move(statements)};
+        }
+    }
+
+    ast::Stmt parse_stmt() {
+        auto lexeme = lexer.next();
+        switch (lexeme.token) {
+            case Tok::Ret: {
+                auto expr = get(Tok::IntLit);
+                auto int_lit = ast::IntLit{expr.value};
+                lexer.next();
+                return ast::RetStmt{std::move(int_lit)};
+            }
+            case Tok::Iden: {
+                // implement
+            }
+            default:
+                wrong_lex(lexeme);
         }
     }
 

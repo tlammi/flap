@@ -67,3 +67,11 @@ TEST(Func, Long) {
     ASSERT_EQ(f.statements.size(), 1);
 }
 
+// TEST(Func, IdenExpr) {
+//     auto res = parse(R"(
+//     f: () -> i32 := {
+//         var: i32 := 100
+//         return var
+//     }
+//     )");
+// }
