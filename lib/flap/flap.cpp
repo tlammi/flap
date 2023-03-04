@@ -3,6 +3,7 @@
 #include "flap/algo.hpp"
 #include "flap/exception.hpp"
 #include "flap/lex.hpp"
+#include "flap/logs.hpp"
 #include "flap/types/scope.hpp"
 
 namespace flap {
@@ -14,8 +15,8 @@ namespace {
 
 using Tok = lex::Token;
 struct Parser {
-    // entrypoint for the parsing
-    ast::Node parse() {
+    ast::Chunk parse_chunk() {
+        // Skip Begin token
         auto lexeme = lexer.next();
         if (any_of_eq(lexeme.token, Tok::IntLit)) {
             return parse_expr();
@@ -24,6 +25,29 @@ struct Parser {
             return parse_from_iden();
         }
         wrong_lex(lexeme);
+    }
+
+    ast::Doc parse() {
+        ast::Doc doc{};
+        // Skip Begin token
+        lexer.next();
+        while (true) {
+            switch (lexer.current().token) {
+                case Tok::End:
+                    return doc;
+                case Tok::Iden: {
+                    auto stmt = parse_from_iden();
+                    if (ast::is_func(stmt)) {
+                        auto f = ast::get_func(std::move(stmt));
+                        logs::debug("parse: found func: ", f.name);
+                        doc.functions->insert(f.name, std::move(f));
+                    }
+                }
+                default: {
+                }
+            }
+            lexer.next();
+        }
     }
 
     ast::Expr parse_expr() {
@@ -43,7 +67,7 @@ struct Parser {
         }
     }
 
-    ast::Node parse_from_iden() {
+    ast::Stmt parse_from_iden() {
         auto iden = lexer.current();
         get(Tok::Colon);
         auto next = lexer.next();
@@ -109,14 +133,29 @@ struct Parser {
     lex::Lexer lexer;
 };
 
-ast::Node do_parse(StringView doc) {
+ast::Doc do_parse(StringView doc) {
     Parser p{lex::Lexer{doc}};
     return p.parse();
 }
+
+ast::Chunk do_parse_chunk(StringView doc) {
+    Parser p{lex::Lexer{doc}};
+    return p.parse_chunk();
+}
 }  // namespace
 
-Parsed::Parsed(std::string doc)
+template <>
+Parsed<ast::Doc>::Parsed(std::string doc)
     : doc{std::move(doc)}, root{do_parse(this->doc)} {}
 
-Parsed parse(std::string doc) { return Parsed(std::move(doc)); }
+template <>
+Parsed<ast::Chunk>::Parsed(std::string doc)
+    : doc{std::move(doc)}, root{do_parse_chunk(this->doc)} {}
+
+Parsed<ast::Doc> parse(std::string doc) {
+    return Parsed<ast::Doc>{std::move(doc)};
+}
+Parsed<ast::Chunk> parse_chunk(std::string doc) {
+    return Parsed<ast::Chunk>(std::move(doc));
+}
 }  // namespace flap

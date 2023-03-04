@@ -1,6 +1,8 @@
 #pragma once
 
-#include <flap/ast/node.hpp>
+#include <flap/ast/chunk.hpp>
+#include <flap/ast/doc.hpp>
+
 namespace flap::ast {
 namespace detail {
 

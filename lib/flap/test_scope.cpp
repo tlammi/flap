@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
 
-#include "flap/types/scope.hpp"
+#include <flap/types/scope.hpp>
 
 using flap::make_scope;
 

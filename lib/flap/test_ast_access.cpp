@@ -9,15 +9,15 @@ TEST(Expr, HoldsIntLit) {
     ASSERT_TRUE(ast::is_int_lit(e));
 }
 
-TEST(Node, HoldsIntLit) {
+TEST(Chunk, HoldsIntLit) {
     ast::Expr e{ast::IntLit{"100"}};
-    ast::Node n{std::move(e)};
+    ast::Chunk n{std::move(e)};
     ASSERT_TRUE(ast::is_int_lit(n));
 }
 
-TEST(Node, HoldsExpr) {
+TEST(Chunk, HoldsExpr) {
     ast::Expr e{ast::IntLit{"100"}};
-    ast::Node n{std::move(e)};
+    ast::Chunk n{std::move(e)};
     ASSERT_TRUE(ast::is_expr(n));
 }
 
@@ -27,9 +27,9 @@ TEST(Expr, GetInt) {
     ASSERT_EQ(i.value(), "1");
 }
 
-TEST(Node, GetInt) {
+TEST(Chunk, GetInt) {
     ast::Expr e{ast::IntLit{"1"}};
-    ast::Node n{std::move(e)};
+    ast::Chunk n{std::move(e)};
     const auto& i = get_int_lit(n);
     ASSERT_EQ(i.value(), "1");
 }

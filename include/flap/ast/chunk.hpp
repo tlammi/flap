@@ -5,6 +5,6 @@
 #include <variant>
 namespace flap::ast {
 
-using Node = std::variant<Expr, Stmt>;
+using Chunk = std::variant<Expr, Stmt>;
 
 }  // namespace flap::ast

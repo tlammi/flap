@@ -1,11 +1,13 @@
 #pragma once
 
 #include <flap/ast/access.hpp>
+#include <flap/ast/chunk.hpp>
+#include <flap/ast/doc.hpp>
 #include <flap/ast/func.hpp>
-#include <flap/ast/node.hpp>
 #include <string>
 namespace flap {
 
+template <class Root>
 struct Parsed {
     explicit Parsed(std::string doc);
     ~Parsed() = default;
@@ -17,9 +19,10 @@ struct Parsed {
     Parsed& operator=(Parsed&&) noexcept = default;
 
     std::string doc;
-    ast::Node root;
+    Root root;
 };
 
-Parsed parse(std::string doc);
+Parsed<ast::Doc> parse(std::string doc);
+Parsed<ast::Chunk> parse_chunk(std::string doc);
 
 }  // namespace flap

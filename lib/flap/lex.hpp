@@ -44,12 +44,20 @@ inline auto operator<<(std::ostream& s, const Lexeme& lex) -> std::ostream& {
 
 class Lexer {
  public:
-    Lexer() {}
+    Lexer() = default;
     explicit Lexer(StringView str) : m_str{str} {}
 
+    Lexer(const Lexer&) = delete;
+    Lexer& operator=(const Lexer&) = delete;
+
+    Lexer(Lexer&&) noexcept = default;
+    Lexer& operator=(Lexer&&) noexcept = default;
+
+    ~Lexer() = default;
     auto current() const noexcept -> Lexeme;
 
     auto next() -> Lexeme;
+    auto set_str(StringView str) { m_str = str; }
 
  private:
     StringView m_str{};
