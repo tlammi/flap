@@ -92,14 +92,16 @@ TEST(Func, Long) {
 }
 
 TEST(Func, IdenExpr) {
-    auto res = parse_chunk(R"(
-     f: () -> i32 := {
-         var: i32 := 100
-         return var
-     }
-     )");
-    ASSERT_TRUE(ast::is_func(res.root));
-    const auto& f = ast::get_func(res.root);
+    auto res = parse_and_check_end(R"(
+    f: () -> i32 := {
+        var: i32 := 100
+        return var
+    }
+    )",
+                                   [](auto& p) { return p.parse_stmt(); });
+
+    ASSERT_TRUE(ast::is_func(res));
+    const auto& f = ast::get_func(res);
     ASSERT_EQ(f.name, "f");
     ASSERT_EQ(f.return_type, "i32");
     ASSERT_EQ(f.statements.size(), 2);
