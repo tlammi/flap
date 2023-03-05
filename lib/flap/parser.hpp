@@ -1,6 +1,8 @@
 #pragma once
 
 #include <flap/ast/expr.hpp>
+#include <flap/ast/func.hpp>
+#include <flap/ast/stmt.hpp>
 
 #include "flap/lex.hpp"
 
@@ -14,7 +16,10 @@ class Parser {
     }
     explicit Parser(StringView view) : Parser(lex::Lexer{view}) {}
 
-    ast::Expr parse_expr();
+    auto parse_expr() -> ast::Expr;
+    auto parse_stmt() -> ast::Stmt;
+
+    auto parse_func_body(StringView name, StringView return_type) -> ast::Func;
 
     auto lexer() const noexcept -> const lex::Lexer&;
 

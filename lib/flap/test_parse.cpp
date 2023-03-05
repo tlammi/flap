@@ -53,9 +53,10 @@ TEST(Expr, IntLitBin) {
 }
 
 TEST(Stmt, VarDef) {
-    auto res = parse_chunk("i: i32 := 100");
-    ASSERT_TRUE(ast::is_var_def(res.root));
-    const auto& v = ast::get_var_def(res.root);
+    auto stmt = parse_and_check_end("i: i32 := 100",
+                                    [](auto& p) { return p.parse_stmt(); });
+    ASSERT_TRUE(ast::is_var_def(stmt));
+    const auto& v = ast::get_var_def(stmt);
     ASSERT_EQ(v.name, "i");
     ASSERT_EQ(v.type, "i32");
     ASSERT_TRUE(ast::is_int_lit(v.expr));
@@ -64,9 +65,11 @@ TEST(Stmt, VarDef) {
 }
 
 TEST(Func, Short) {
-    auto res = parse_chunk("func: () -> i32 := 4");
-    ASSERT_TRUE(ast::is_func(res.root));
-    const auto& f = ast::get_func(res.root);
+    auto res = parse_and_check_end("func: () -> i32 := 4",
+                                   [](auto& p) { return p.parse_stmt(); });
+    // auto res = parse_chunk("func: () -> i32 := 4");
+    ASSERT_TRUE(ast::is_func(res));
+    const auto& f = ast::get_func(res);
     ASSERT_EQ(f.name, "func");
     ASSERT_EQ(f.return_type, "i32");
     ASSERT_EQ(f.statements.size(), 1);
