@@ -16,6 +16,8 @@ class Parser {
 
     ast::Expr parse_expr();
 
+    auto lexer() const noexcept -> const lex::Lexer&;
+
  private:
     lex::Lexer m_lex;
     auto get(lex::Token tok) -> lex::Lexeme;

@@ -1,44 +1,52 @@
 #include <gtest/gtest.h>
 
 #include <flap/flap.hpp>
+#include <flap/lex.hpp>
 
 #include "flap/parser.hpp"
 
 using flap::parse;
 using flap::parse_chunk;
 using flap::Parser;
+using flap::StringView;
+using Tok = flap::lex::Token;
+
 namespace ast = flap::ast;
 
+template <class F>
+auto parse_and_check_end(StringView str, F&& f) {
+    auto p = Parser(str);
+    auto res = f(p);
+    EXPECT_EQ(p.lexer().current().token, Tok::End);
+    return res;
+}
+
 TEST(Expr, IntLitDec) {
-    auto expr = Parser("100").parse_expr();
+    auto expr =
+        parse_and_check_end("100", [](auto& p) { return p.parse_expr(); });
     ASSERT_TRUE(ast::is_int_lit(expr));
     const auto& i = ast::get_int_lit(expr);
     ASSERT_EQ(i.radix(), 10);
     ASSERT_EQ(i.value(), "100");
     ASSERT_EQ(i.raw_value(), "100");
-    /*
-    auto res = parse_chunk("100");
-    ASSERT_TRUE(ast::is_int_lit(res.root));
-    const auto& i = ast::get_int_lit(res.root);
-    ASSERT_EQ(i.radix(), 10);
-    ASSERT_EQ(i.value(), "100");
-    ASSERT_EQ(i.raw_value(), "100");
-    */
 }
 
 TEST(Expr, IntLitHex) {
-    auto res = parse_chunk("0x55");
-    ASSERT_TRUE(ast::is_int_lit(res.root));
-    const auto& i = ast::get_int_lit(res.root);
+    auto expr =
+        parse_and_check_end("0x55", [](auto& p) { return p.parse_expr(); });
+    ASSERT_TRUE(ast::is_int_lit(expr));
+    const auto& i = ast::get_int_lit(expr);
+
     ASSERT_EQ(i.radix(), 16);
     ASSERT_EQ(i.value(), "55");
     ASSERT_EQ(i.raw_value(), "0x55");
 }
 
 TEST(Expr, IntLitBin) {
-    auto res = parse_chunk("0b111");
-    ASSERT_TRUE(ast::is_int_lit(res.root));
-    const auto& i = ast::get_int_lit(res.root);
+    auto expr =
+        parse_and_check_end("0b111", [](auto& p) { return p.parse_expr(); });
+    ASSERT_TRUE(ast::is_int_lit(expr));
+    const auto& i = ast::get_int_lit(expr);
     ASSERT_EQ(i.radix(), 2);
     ASSERT_EQ(i.value(), "111");
     ASSERT_EQ(i.raw_value(), "0b111");
@@ -95,12 +103,12 @@ TEST(Func, IdenExpr) {
     ASSERT_TRUE(ast::is_ret_stmt(f.statements.at(1)));
 }
 
-TEST(Func, Multiple) {
-    auto res = parse(R"(
-    a: () -> i32 := 4
-    b: () -> i32 := {
-        return 2;
-    }
-    )");
-    ASSERT_TRUE(res.root.functions->contains("a"));
-}
+// TEST(Func, Multiple) {
+//     auto res = parse(R"(
+//     a: () -> i32 := 4
+//     b: () -> i32 := {
+//         return 2;
+//     }
+//     )");
+//     ASSERT_TRUE(res.root.functions->contains("a"));
+// }

@@ -22,6 +22,8 @@ ast::Expr Parser::parse_expr() {
             wrong_lex(m_lex.current());
     }
 }
+auto Parser::lexer() const noexcept -> const lex::Lexer& { return m_lex; }
+
 auto Parser::get(Tok tok) -> lex::Lexeme {
     auto res = m_lex.next();
     if (res.token != tok) wrong_lex(res);
