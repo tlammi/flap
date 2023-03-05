@@ -57,8 +57,20 @@ auto Parser::parse_stmt() -> ast::Stmt {
 }
 auto Parser::parse_func_body(StringView name, StringView return_type)
     -> ast::Func {
-    std::vector<ast::Stmt> statements{ast::RetStmt{parse_expr()}};
-    return ast::Func{name, return_type, std::move(statements)};
+    if (m_lex.current().token == Tok::Brace) {
+        m_lex.next();
+        std::vector<ast::Stmt> statements{};
+        while (m_lex.current().token != Tok::BraceClose) {
+            statements.push_back(parse_stmt());
+        }
+        // consume "}"
+        m_lex.next();
+        return ast::Func{name, return_type, std::move(statements)};
+
+    } else {
+        std::vector<ast::Stmt> statements{ast::RetStmt{parse_expr()}};
+        return ast::Func{name, return_type, std::move(statements)};
+    }
 }
 
 auto Parser::lexer() const noexcept -> const lex::Lexer& { return m_lex; }

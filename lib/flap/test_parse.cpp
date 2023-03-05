@@ -77,14 +77,15 @@ TEST(Func, Short) {
 }
 
 TEST(Func, Long) {
-    auto res = parse_chunk(R"(
+    auto res = parse_and_check_end(R"(
     f: () -> i32 := {
         return 100
     }
-    )");
+    )",
+                                   [](auto& p) { return p.parse_stmt(); });
 
-    ASSERT_TRUE(ast::is_func(res.root));
-    const auto& f = ast::get_func(res.root);
+    ASSERT_TRUE(ast::is_func(res));
+    const auto& f = ast::get_func(res);
     ASSERT_EQ(f.name, "f");
     ASSERT_EQ(f.return_type, "i32");
     ASSERT_EQ(f.statements.size(), 1);
